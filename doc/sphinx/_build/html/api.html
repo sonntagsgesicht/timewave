@@ -1,0 +1,1147 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>API Documentation &mdash; Timewave alpha documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="author" title="About these documents"
+              href="about.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Timewave alpha documentation" href="index.html"/>
+        <link rel="next" title="Releases" href="releases.html"/>
+        <link rel="prev" title="Tutorial" href="tutorials.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Timewave
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="starting.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#timewave-engine">Timewave Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#timewave-producer">Timewave Producer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#timewave-consumer">Timewave Consumer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stochastic-process">Stochastic Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stochastic-process-simulation">Stochastic Process Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html">Releases</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Timewave</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>API Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="api-documentation">
+<h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="timewave-engine">
+<h2>Timewave Engine<a class="headerlink" href="#timewave-engine" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#engine.Engine" title="engine.Engine"><code class="xref py py-obj docutils literal"><span class="pre">engine.Engine</span></code></a></td>
+<td>This class implements Monte Carlo engine</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#engine.State" title="engine.State"><code class="xref py py-obj docutils literal"><span class="pre">engine.State</span></code></a></td>
+<td>simulation state</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#engine.Producer" title="engine.Producer"><code class="xref py py-obj docutils literal"><span class="pre">engine.Producer</span></code></a></td>
+<td>abstract class implementing simple producer for a model between grid dates</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#engine.Consumer" title="engine.Consumer"><code class="xref py py-obj docutils literal"><span class="pre">engine.Consumer</span></code></a></td>
+<td>base class for simulation consumers</td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-engine"></span><p>module containing simulation method related classes incl. multiprocessing support</p>
+<dl class="class">
+<dt id="engine.Consumer">
+<em class="property">class </em><code class="descclassname">engine.</code><code class="descname">Consumer</code><span class="sig-paren">(</span><em>func=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/engine.html#Consumer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#engine.Consumer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>base class for simulation consumers</p>
+<p>initiatlizes consumer by providing a function
+:param func: consumer function with exact 1 argument
+which will consume the producer state. Default will return <cite>state.value</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+</tbody>
+</table>
+<dl class="method">
+<dt id="engine.Consumer.consume">
+<code class="descname">consume</code><span class="sig-paren">(</span><em>state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/engine.html#Consumer.consume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#engine.Consumer.consume" title="Permalink to this definition">¶</a></dt>
+<dd><p>consume new producer state</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="engine.Consumer.finalize">
+<code class="descname">finalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/engine.html#Consumer.finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#engine.Consumer.finalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>finalize simulation for consumer</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="engine.Consumer.finalize_path">
+<code class="descname">finalize_path</code><span class="sig-paren">(</span><em>path_num=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/engine.html#Consumer.finalize_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#engine.Consumer.finalize_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>finalize last path for consumer</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="engine.Consumer.finalize_worker">
+<code class="descname">finalize_worker</code><span class="sig-paren">(</span><em>process_num=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/engine.html#Consumer.finalize_worker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#engine.Consumer.finalize_worker" title="Permalink to this definition">¶</a></dt>
+<dd><p>finalize process for consumer</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="engine.Consumer.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>queue_get</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/engine.html#Consumer.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#engine.Consumer.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>to get states from multiprocessing.queue</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="engine.Consumer.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>grid=None</em>, <em>num_of_paths=None</em>, <em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/engine.html#Consumer.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#engine.Consumer.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>initialize consumer for simulation
+:param num_of_paths: number of path
+:type num_of_paths: int
+:param grid: list of grid point
+:type grid: list(date)
+:param seed: simulation seed
+:type seed: hashable</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="engine.Consumer.initialize_path">
+<code class="descname">initialize_path</code><span class="sig-paren">(</span><em>path_num=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/engine.html#Consumer.initialize_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#engine.Consumer.initialize_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>initialize consumer for next path</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="engine.Consumer.initialize_worker">
+<code class="descname">initialize_worker</code><span class="sig-paren">(</span><em>process_num=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/engine.html#Consumer.initialize_worker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#engine.Consumer.initialize_worker" title="Permalink to this definition">¶</a></dt>
+<dd><p>reinitialize consumer for process in multiprocesing</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="engine.Consumer.put">
+<code class="descname">put</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/engine.html#Consumer.put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#engine.Consumer.put" title="Permalink to this definition">¶</a></dt>
+<dd><p>to put state into multiprocessing.queue</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="engine.Engine">
+<em class="property">class </em><code class="descclassname">engine.</code><code class="descname">Engine</code><span class="sig-paren">(</span><em>producer=None</em>, <em>consumer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/engine.html#Engine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#engine.Engine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>This class implements Monte Carlo engine</p>
+<dl class="method">
+<dt id="engine.Engine.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>grid=None</em>, <em>num_of_paths=2000</em>, <em>seed=0</em>, <em>num_of_workers=4</em>, <em>profiling=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/engine.html#Engine.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#engine.Engine.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>implements simulation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>grid</strong> (<em>list</em><em>(</em><em>date</em><em>)</em><em></em>) &#8211; list of Monte Carlo grid dates</li>
+<li><strong>num_of_paths</strong> (<em>int</em>) &#8211; number of Monte Carlo paths</li>
+<li><strong>seed</strong> (<em>hashable</em>) &#8211; seed used for rnds initialisation (additional adjustment in place)</li>
+<li><strong>or None num_of_workers</strong> (<em>int</em>) &#8211; number of parallel workers (default: cpu_count()),
+if None no parallel processing is used</li>
+<li><strong>profiling</strong> (<em>bool</em>) &#8211; signal whether to use profiling, True means used, else not</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return object:</th><td class="field-body"><p class="first last">final consumer state</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>It returns a list of lists.
+The list contains per path a list produced by consumer at observation dates</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="engine.Producer">
+<em class="property">class </em><code class="descclassname">engine.</code><code class="descname">Producer</code><span class="sig-paren">(</span><em>func=None</em>, <em>initial_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/engine.html#Producer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#engine.Producer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>abstract class implementing simple producer for a model between grid dates</p>
+<dl class="method">
+<dt id="engine.Producer.evolve">
+<code class="descname">evolve</code><span class="sig-paren">(</span><em>new_date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/engine.html#Producer.evolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#engine.Producer.evolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>evolve to the new process state at the next date, i.e. do one step in the simulation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>new_date</strong> (<em>date</em>) &#8211; date of the new state</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return State:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="engine.Producer.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>grid</em>, <em>num_of_paths</em>, <em>seed</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/engine.html#Producer.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#engine.Producer.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>inits producer for a simulation run</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="engine.Producer.initialize_path">
+<code class="descname">initialize_path</code><span class="sig-paren">(</span><em>path_num=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/engine.html#Producer.initialize_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#engine.Producer.initialize_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>inits producer for next path, i.e. sets current state to initial state</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="engine.Producer.initialize_worker">
+<code class="descname">initialize_worker</code><span class="sig-paren">(</span><em>process_num=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/engine.html#Producer.initialize_worker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#engine.Producer.initialize_worker" title="Permalink to this definition">¶</a></dt>
+<dd><p>inits producer for a simulation run on a single process</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="engine.State">
+<em class="property">class </em><code class="descclassname">engine.</code><code class="descname">State</code><span class="sig-paren">(</span><em>value=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/engine.html#State"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#engine.State" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>simulation state</p>
+</dd></dl>
+
+</div>
+<div class="section" id="timewave-producer">
+<h2>Timewave Producer<a class="headerlink" href="#timewave-producer" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#producers.DeterministicProducer" title="producers.DeterministicProducer"><code class="xref py py-obj docutils literal"><span class="pre">producers.DeterministicProducer</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#producers.StringReaderProducer" title="producers.StringReaderProducer"><code class="xref py py-obj docutils literal"><span class="pre">producers.StringReaderProducer</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#producers.MultiProducer" title="producers.MultiProducer"><code class="xref py py-obj docutils literal"><span class="pre">producers.MultiProducer</span></code></a></td>
+<td>initializer</td>
+</tr>
+</tbody>
+</table>
+<img src="_images/inheritance-7e2a4a5a5ddbc76c9e22d1ba1400710d82868808.png" alt="Inheritance diagram of producers" usemap="#inheritance5c8ddafbf7" class="inheritance"/>
+<map id="inheritance5c8ddafbf7" name="inheritance5c8ddafbf7">
+<area shape="rect" id="node1" href="#engine.Producer" target="_top" title="abstract class implementing simple producer for a model between grid dates" alt="" coords="5,29,125,53"/>
+<area shape="rect" id="node2" href="#producers.DeterministicProducer" target="_top" title="producers.DeterministicProducer" alt="" coords="173,5,388,29"/>
+<area shape="rect" id="node3" href="#producers.MultiProducer" target="_top" title="producers.MultiProducer" alt="" coords="197,53,364,77"/>
+<area shape="rect" id="node4" href="#producers.StringReaderProducer" target="_top" title="producers.StringReaderProducer" alt="" coords="436,5,653,29"/>
+</map>
+<span class="target" id="module-producers"></span><p>module containing brownian motion model related classes</p>
+<dl class="class">
+<dt id="producers.DeterministicProducer">
+<em class="property">class </em><code class="descclassname">producers.</code><code class="descname">DeterministicProducer</code><span class="sig-paren">(</span><em>sample_list</em>, <em>func=None</em>, <em>initial_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/producers.html#DeterministicProducer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#producers.DeterministicProducer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#engine.Producer" title="engine.Producer"><code class="xref py py-class docutils literal"><span class="pre">engine.Producer</span></code></a></p>
+<dl class="method">
+<dt id="producers.DeterministicProducer.evolve">
+<code class="descname">evolve</code><span class="sig-paren">(</span><em>new_date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/producers.html#DeterministicProducer.evolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#producers.DeterministicProducer.evolve" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="producers.MultiProducer">
+<em class="property">class </em><code class="descclassname">producers.</code><code class="descname">MultiProducer</code><span class="sig-paren">(</span><em>*producers</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/producers.html#MultiProducer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#producers.MultiProducer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#engine.Producer" title="engine.Producer"><code class="xref py py-class docutils literal"><span class="pre">engine.Producer</span></code></a></p>
+<p>initializer</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>or produces</strong> (<em>list</em><em>(</em><a class="reference internal" href="#engine.Producer" title="engine.Producer"><em>Producer</em></a><em>)</em><em></em>) &#8211; list of producers to be used one after another</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="producers.MultiProducer.evolve">
+<code class="descname">evolve</code><span class="sig-paren">(</span><em>new_date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/producers.html#MultiProducer.evolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#producers.MultiProducer.evolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>evolve to the new process state at the next date, i.e. do one step in the simulation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>new_date</strong> (<em>date</em>) &#8211; date of the new state</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return State:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="producers.MultiProducer.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>grid</em>, <em>num_of_paths</em>, <em>seed</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/producers.html#MultiProducer.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#producers.MultiProducer.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>inits producer for a simulation run</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="producers.MultiProducer.initialize_path">
+<code class="descname">initialize_path</code><span class="sig-paren">(</span><em>path_num=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/producers.html#MultiProducer.initialize_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#producers.MultiProducer.initialize_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>inits producer for next path, i.e. sets current state to initial state</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="producers.MultiProducer.initialize_worker">
+<code class="descname">initialize_worker</code><span class="sig-paren">(</span><em>process_num=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/producers.html#MultiProducer.initialize_worker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#producers.MultiProducer.initialize_worker" title="Permalink to this definition">¶</a></dt>
+<dd><p>inits producer for a simulation run on a single process</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="producers.MultiProducer.producers">
+<code class="descname">producers</code><em class="property"> = None</em><a class="headerlink" href="#producers.MultiProducer.producers" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list(Producer)</em> &#8211; list of consumers to be used one after another</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="producers.StringReaderProducer">
+<em class="property">class </em><code class="descclassname">producers.</code><code class="descname">StringReaderProducer</code><span class="sig-paren">(</span><em>data_str</em>, <em>str_decoder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/producers.html#StringReaderProducer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#producers.StringReaderProducer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#producers.DeterministicProducer" title="producers.DeterministicProducer"><code class="xref py py-class docutils literal"><span class="pre">producers.DeterministicProducer</span></code></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="timewave-consumer">
+<h2>Timewave Consumer<a class="headerlink" href="#timewave-consumer" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#consumers.QuietConsumer" title="consumers.QuietConsumer"><code class="xref py py-obj docutils literal"><span class="pre">consumers.QuietConsumer</span></code></a></td>
+<td>QuietConsumer returns nothing, since QuietConsumer does simply not populate result in finalize_path()</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#consumers.StringWriterConsumer" title="consumers.StringWriterConsumer"><code class="xref py py-obj docutils literal"><span class="pre">consumers.StringWriterConsumer</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#consumers.StackedConsumer" title="consumers.StackedConsumer"><code class="xref py py-obj docutils literal"><span class="pre">consumers.StackedConsumer</span></code></a></td>
+<td>stacked version of consumer, i.e. a following consumer is populated with out state of the preceding one</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#consumers.ConsumerConsumer" title="consumers.ConsumerConsumer"><code class="xref py py-obj docutils literal"><span class="pre">consumers.ConsumerConsumer</span></code></a></td>
+<td>class implementing the consumer interface</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#consumers.MultiConsumer" title="consumers.MultiConsumer"><code class="xref py py-obj docutils literal"><span class="pre">consumers.MultiConsumer</span></code></a></td>
+<td>initializer</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#consumers.ResetConsumer" title="consumers.ResetConsumer"><code class="xref py py-obj docutils literal"><span class="pre">consumers.ResetConsumer</span></code></a></td>
+<td>FunctionConsumer that admits a reset function for each path</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#consumers.TransposedConsumer" title="consumers.TransposedConsumer"><code class="xref py py-obj docutils literal"><span class="pre">consumers.TransposedConsumer</span></code></a></td>
+<td>TransposedConsumer returns sample distribution per grid point not per sample path</td>
+</tr>
+</tbody>
+</table>
+<img src="_images/inheritance-b3adcc51fe69d98010edcf3dbb9bf73115f8e322.png" alt="Inheritance diagram of consumers" usemap="#inheritance2e51789a23" class="inheritance"/>
+<map id="inheritance2e51789a23" name="inheritance2e51789a23">
+<area shape="rect" id="node1" href="#consumers.ConsumerConsumer" target="_top" title="class implementing the consumer interface" alt="" coords="184,5,397,29"/>
+<area shape="rect" id="node3" href="#consumers.MultiConsumer" target="_top" title="consumers.MultiConsumer" alt="" coords="450,5,630,29"/>
+<area shape="rect" id="node2" href="#engine.Consumer" target="_top" title="base class for simulation consumers" alt="" coords="5,125,132,149"/>
+<area shape="rect" id="node4" href="#consumers.QuietConsumer" target="_top" title="QuietConsumer returns nothing, since QuietConsumer does simply not populate result in finalize_path()" alt="" coords="199,53,383,77"/>
+<area shape="rect" id="node5" href="#consumers.ResetConsumer" target="_top" title="FunctionConsumer that admits a reset function for each path" alt="" coords="198,101,384,125"/>
+<area shape="rect" id="node6" href="#consumers.StackedConsumer" target="_top" title="stacked version of consumer, i.e. a following consumer is populated with out state of the preceding one" alt="" coords="191,149,391,173"/>
+<area shape="rect" id="node7" href="#consumers.StringWriterConsumer" target="_top" title="consumers.StringWriterConsumer" alt="" coords="180,197,402,221"/>
+<area shape="rect" id="node8" href="#consumers.TransposedConsumer" target="_top" title="TransposedConsumer returns sample distribution per grid point not per sample path" alt="" coords="180,245,402,269"/>
+</map>
+<span class="target" id="module-consumers"></span><dl class="class">
+<dt id="consumers.ConsumerConsumer">
+<em class="property">class </em><code class="descclassname">consumers.</code><code class="descname">ConsumerConsumer</code><span class="sig-paren">(</span><em>*consumers</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#ConsumerConsumer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.ConsumerConsumer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#engine.Consumer" title="engine.Consumer"><code class="xref py py-class docutils literal"><span class="pre">engine.Consumer</span></code></a></p>
+<p>class implementing the consumer interface
+several consumers can be saved and are executed one after another
+only the result of the last consumer is returned (see finalize_worker)</p>
+<p>initializer</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>list</strong><strong>(</strong><strong>Consumer</strong><strong>)</strong><strong></strong> &#8211; </td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="consumers.ConsumerConsumer.consume">
+<code class="descname">consume</code><span class="sig-paren">(</span><em>state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#ConsumerConsumer.consume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.ConsumerConsumer.consume" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns pair containing the result of consumption and consumer state
+the returned state is equal to the state.get_short_rate()
+the returned consume state is None</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>state</strong> (<a class="reference internal" href="#engine.State" title="engine.State"><em>State</em></a>) &#8211; specific process state</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return object:</th><td class="field-body">the new consumer state</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="consumers.ConsumerConsumer.finalize">
+<code class="descname">finalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#ConsumerConsumer.finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.ConsumerConsumer.finalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>finalize for ConsumerConsumer</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="consumers.ConsumerConsumer.finalize_path">
+<code class="descname">finalize_path</code><span class="sig-paren">(</span><em>path_num=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#ConsumerConsumer.finalize_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.ConsumerConsumer.finalize_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>finalize path and populate result for ConsumerConsumer</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="consumers.ConsumerConsumer.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>queue_get</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#ConsumerConsumer.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.ConsumerConsumer.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>get to given consumer states.
+This function is used for merging of results of parallelized MC.
+The first state is used for merging in place. The states must be disjoint.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>queue_get</strong> (<em>object</em>) &#8211; second consumer state</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="consumers.ConsumerConsumer.initial_state">
+<code class="descname">initial_state</code><em class="property"> = None</em><a class="headerlink" href="#consumers.ConsumerConsumer.initial_state" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list(Consumer)</em> &#8211; list of consumers to be used one after another</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="consumers.ConsumerConsumer.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>grid=None</em>, <em>num_of_paths=None</em>, <em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#ConsumerConsumer.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.ConsumerConsumer.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>initialize ConsumerConsumer</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="consumers.ConsumerConsumer.initialize_path">
+<code class="descname">initialize_path</code><span class="sig-paren">(</span><em>path_num=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#ConsumerConsumer.initialize_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.ConsumerConsumer.initialize_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>make the consumer_state ready for the next MC path</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path_num</strong> (<em>int</em>) &#8211; </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="consumers.MultiConsumer">
+<em class="property">class </em><code class="descclassname">consumers.</code><code class="descname">MultiConsumer</code><span class="sig-paren">(</span><em>*consumers</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#MultiConsumer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.MultiConsumer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#consumers.ConsumerConsumer" title="consumers.ConsumerConsumer"><code class="xref py py-class docutils literal"><span class="pre">consumers.ConsumerConsumer</span></code></a></p>
+<p>initializer</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>list</strong><strong>(</strong><strong>Consumer</strong><strong>)</strong><strong></strong> &#8211; </td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="consumers.MultiConsumer.consume">
+<code class="descname">consume</code><span class="sig-paren">(</span><em>state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#MultiConsumer.consume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.MultiConsumer.consume" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="consumers.QuietConsumer">
+<em class="property">class </em><code class="descclassname">consumers.</code><code class="descname">QuietConsumer</code><span class="sig-paren">(</span><em>func=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#QuietConsumer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.QuietConsumer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#engine.Consumer" title="engine.Consumer"><code class="xref py py-class docutils literal"><span class="pre">engine.Consumer</span></code></a></p>
+<p>QuietConsumer returns nothing, since QuietConsumer does simply not populate result in finalize_path()</p>
+<p>initiatlizes consumer by providing a function
+:param func: consumer function with exact 1 argument
+which will consume the producer state. Default will return <cite>state.value</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+</tbody>
+</table>
+<dl class="method">
+<dt id="consumers.QuietConsumer.finalize">
+<code class="descname">finalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#QuietConsumer.finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.QuietConsumer.finalize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="consumers.QuietConsumer.finalize_path">
+<code class="descname">finalize_path</code><span class="sig-paren">(</span><em>path_num=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#QuietConsumer.finalize_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.QuietConsumer.finalize_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>QuietConsumer does simply not populate result in finalize_path()</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="consumers.ResetConsumer">
+<em class="property">class </em><code class="descclassname">consumers.</code><code class="descname">ResetConsumer</code><span class="sig-paren">(</span><em>fixing_func=None</em>, <em>reset_func=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#ResetConsumer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.ResetConsumer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#engine.Consumer" title="engine.Consumer"><code class="xref py py-class docutils literal"><span class="pre">engine.Consumer</span></code></a></p>
+<p>FunctionConsumer that admits a reset function for each path</p>
+<dl class="method">
+<dt id="consumers.ResetConsumer.finalize">
+<code class="descname">finalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#ResetConsumer.finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.ResetConsumer.finalize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="consumers.ResetConsumer.initialize_path">
+<code class="descname">initialize_path</code><span class="sig-paren">(</span><em>path_num=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#ResetConsumer.initialize_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.ResetConsumer.initialize_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="consumers.StackedConsumer">
+<em class="property">class </em><code class="descclassname">consumers.</code><code class="descname">StackedConsumer</code><span class="sig-paren">(</span><em>*consumers</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#StackedConsumer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.StackedConsumer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#engine.Consumer" title="engine.Consumer"><code class="xref py py-class docutils literal"><span class="pre">engine.Consumer</span></code></a></p>
+<p>stacked version of consumer, i.e. a following consumer is populated with out state of the preceding one</p>
+<dl class="method">
+<dt id="consumers.StackedConsumer.consume">
+<code class="descname">consume</code><span class="sig-paren">(</span><em>state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#StackedConsumer.consume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.StackedConsumer.consume" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="consumers.StackedConsumer.finalize">
+<code class="descname">finalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#StackedConsumer.finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.StackedConsumer.finalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>finalize for ConsumerConsumer</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="consumers.StackedConsumer.finalize_path">
+<code class="descname">finalize_path</code><span class="sig-paren">(</span><em>path_num=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#StackedConsumer.finalize_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.StackedConsumer.finalize_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>finalize path and populate result for ConsumerConsumer</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="consumers.StackedConsumer.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>queue_get</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#StackedConsumer.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.StackedConsumer.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="consumers.StackedConsumer.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>num_of_paths=None</em>, <em>grid=None</em>, <em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#StackedConsumer.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.StackedConsumer.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>initialize StackedConsumer</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="consumers.StackedConsumer.initialize_path">
+<code class="descname">initialize_path</code><span class="sig-paren">(</span><em>path_num=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#StackedConsumer.initialize_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.StackedConsumer.initialize_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>make the consumer_state ready for the next MC path</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path_num</strong> (<em>int</em>) &#8211; </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="consumers.StackedConsumer.put">
+<code class="descname">put</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#StackedConsumer.put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.StackedConsumer.put" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="consumers.StringWriterConsumer">
+<em class="property">class </em><code class="descclassname">consumers.</code><code class="descname">StringWriterConsumer</code><span class="sig-paren">(</span><em>str_decoder=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#StringWriterConsumer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.StringWriterConsumer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#engine.Consumer" title="engine.Consumer"><code class="xref py py-class docutils literal"><span class="pre">engine.Consumer</span></code></a></p>
+<dl class="method">
+<dt id="consumers.StringWriterConsumer.finalize">
+<code class="descname">finalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#StringWriterConsumer.finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.StringWriterConsumer.finalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>finalize simulation for consumer</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="consumers.TransposedConsumer">
+<em class="property">class </em><code class="descclassname">consumers.</code><code class="descname">TransposedConsumer</code><span class="sig-paren">(</span><em>func=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#TransposedConsumer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.TransposedConsumer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#engine.Consumer" title="engine.Consumer"><code class="xref py py-class docutils literal"><span class="pre">engine.Consumer</span></code></a></p>
+<p>TransposedConsumer returns sample distribution per grid point not per sample path</p>
+<p>initiatlizes consumer by providing a function
+:param func: consumer function with exact 1 argument
+which will consume the producer state. Default will return <cite>state.value</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+</tbody>
+</table>
+<dl class="method">
+<dt id="consumers.TransposedConsumer.finalize">
+<code class="descname">finalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumers.html#TransposedConsumer.finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumers.TransposedConsumer.finalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>finalize for PathConsumer</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="stochastic-process">
+<h2>Stochastic Process<a class="headerlink" href="#stochastic-process" title="Permalink to this headline">¶</a></h2>
+<img src="_images/inheritance-e5ee6fb43ebe0f8f184b1a1fd023b9b82bbdf2a0.png" alt="Inheritance diagram of stochasticprocess" usemap="#inheritanceac34cc8c05" class="inheritance"/>
+<map id="inheritanceac34cc8c05" name="inheritanceac34cc8c05">
+<area shape="rect" id="node1" href="#stochasticprocess.GeometricBrownianMotion" target="_top" title="class implementing general Gauss process between grid dates" alt="" coords="529,4,764,24"/>
+<area shape="rect" id="node2" href="#stochasticprocess.WienerProcess" target="_top" title="class implementing general Gauss process between grid dates" alt="" coords="275,4,455,24"/>
+<area shape="rect" id="node3" href="#stochasticprocess.MultiGauss" target="_top" title="class implementing multi dimensional brownian motion" alt="" coords="566,43,727,63"/>
+<area shape="rect" id="node4" href="#stochasticprocess.MultivariateStochasticProcess" target="_top" title="stochasticprocess.MultivariateStochasticProcess" alt="" coords="239,43,490,63"/>
+<area shape="rect" id="node7" href="#stochasticprocess.SABR" target="_top" title="class implementing the Hagan et al SABR model" alt="" coords="578,82,715,102"/>
+<area shape="rect" id="node5" href="#stochasticprocess.StochasticProcess" target="_top" title="stochasticprocess.StochasticProcess" alt="" coords="4,43,200,63"/>
+<area shape="rect" id="node6" href="#stochasticprocess.OrnsteinUhlenbeckProcess" target="_top" title="class implementing Ornstein Uhlenbeck process" alt="" coords="246,82,484,102"/>
+</map>
+<span class="target" id="module-stochasticprocess"></span><p>module containing brownian motion model related classes</p>
+<dl class="class">
+<dt id="stochasticprocess.GeometricBrownianMotion">
+<em class="property">class </em><code class="descclassname">stochasticprocess.</code><code class="descname">GeometricBrownianMotion</code><span class="sig-paren">(</span><em>mu=0.0</em>, <em>sigma=1.0</em>, <em>start=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#GeometricBrownianMotion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.GeometricBrownianMotion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#stochasticprocess.WienerProcess" title="stochasticprocess.WienerProcess"><code class="xref py py-class docutils literal"><span class="pre">stochasticprocess.WienerProcess</span></code></a></p>
+<p>class implementing general Gauss process between grid dates</p>
+<dl class="method">
+<dt id="stochasticprocess.GeometricBrownianMotion.evolve">
+<code class="descname">evolve</code><span class="sig-paren">(</span><em>x</em>, <em>s</em>, <em>e</em>, <em>q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#GeometricBrownianMotion.evolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.GeometricBrownianMotion.evolve" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stochasticprocess.GeometricBrownianMotion.mean">
+<code class="descname">mean</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#GeometricBrownianMotion.mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.GeometricBrownianMotion.mean" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stochasticprocess.GeometricBrownianMotion.variance">
+<code class="descname">variance</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#GeometricBrownianMotion.variance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.GeometricBrownianMotion.variance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stochasticprocess.MultiGauss">
+<em class="property">class </em><code class="descclassname">stochasticprocess.</code><code class="descname">MultiGauss</code><span class="sig-paren">(</span><em>mu=[0.0], covar=[[1.0]], start=[0.0]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#MultiGauss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.MultiGauss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#stochasticprocess.MultivariateStochasticProcess" title="stochasticprocess.MultivariateStochasticProcess"><code class="xref py py-class docutils literal"><span class="pre">stochasticprocess.MultivariateStochasticProcess</span></code></a></p>
+<p>class implementing multi dimensional brownian motion</p>
+<dl class="method">
+<dt id="stochasticprocess.MultiGauss.evolve">
+<code class="descname">evolve</code><span class="sig-paren">(</span><em>x</em>, <em>s</em>, <em>e</em>, <em>q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#MultiGauss.evolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.MultiGauss.evolve" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stochasticprocess.MultiGauss.mean">
+<code class="descname">mean</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#MultiGauss.mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.MultiGauss.mean" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stochasticprocess.MultiGauss.variance">
+<code class="descname">variance</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#MultiGauss.variance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.MultiGauss.variance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stochasticprocess.MultivariateStochasticProcess">
+<em class="property">class </em><code class="descclassname">stochasticprocess.</code><code class="descname">MultivariateStochasticProcess</code><span class="sig-paren">(</span><em>start</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#MultivariateStochasticProcess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.MultivariateStochasticProcess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#stochasticprocess.StochasticProcess" title="stochasticprocess.StochasticProcess"><code class="xref py py-class docutils literal"><span class="pre">stochasticprocess.StochasticProcess</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="stochasticprocess.OrnsteinUhlenbeckProcess">
+<em class="property">class </em><code class="descclassname">stochasticprocess.</code><code class="descname">OrnsteinUhlenbeckProcess</code><span class="sig-paren">(</span><em>theta=0.1</em>, <em>mu=0.1</em>, <em>sigma=0.1</em>, <em>start=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#OrnsteinUhlenbeckProcess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.OrnsteinUhlenbeckProcess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#stochasticprocess.StochasticProcess" title="stochasticprocess.StochasticProcess"><code class="xref py py-class docutils literal"><span class="pre">stochasticprocess.StochasticProcess</span></code></a></p>
+<p>class implementing Ornstein Uhlenbeck process</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>theta</strong> (<em>flaot</em>) &#8211; mean reversion speed</li>
+<li><strong>mu</strong> (<em>float</em>) &#8211; drift</li>
+<li><strong>sigma</strong> (<em>float</em>) &#8211; diffusion</li>
+<li><strong>start</strong> (<em>float</em>) &#8211; initial value</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="math">
+\[dx_t = \theta ( \mu - x_t) dt + \sigma dW_t, x_0 = a\]</div>
+<dl class="method">
+<dt id="stochasticprocess.OrnsteinUhlenbeckProcess.evolve">
+<code class="descname">evolve</code><span class="sig-paren">(</span><em>x</em>, <em>s</em>, <em>e</em>, <em>q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#OrnsteinUhlenbeckProcess.evolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.OrnsteinUhlenbeckProcess.evolve" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stochasticprocess.OrnsteinUhlenbeckProcess.mean">
+<code class="descname">mean</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#OrnsteinUhlenbeckProcess.mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.OrnsteinUhlenbeckProcess.mean" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stochasticprocess.OrnsteinUhlenbeckProcess.variance">
+<code class="descname">variance</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#OrnsteinUhlenbeckProcess.variance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.OrnsteinUhlenbeckProcess.variance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stochasticprocess.SABR">
+<em class="property">class </em><code class="descclassname">stochasticprocess.</code><code class="descname">SABR</code><span class="sig-paren">(</span><em>alpha=0.1</em>, <em>beta=0.2</em>, <em>nu=0.3</em>, <em>rho=-0.2</em>, <em>start=0.05</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#SABR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.SABR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#stochasticprocess.MultivariateStochasticProcess" title="stochasticprocess.MultivariateStochasticProcess"><code class="xref py py-class docutils literal"><span class="pre">stochasticprocess.MultivariateStochasticProcess</span></code></a></p>
+<p>class implementing the Hagan et al SABR model</p>
+<dl class="method">
+<dt id="stochasticprocess.SABR.evolve">
+<code class="descname">evolve</code><span class="sig-paren">(</span><em>x</em>, <em>s</em>, <em>e</em>, <em>q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#SABR.evolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.SABR.evolve" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stochasticprocess.SABR.mean">
+<code class="descname">mean</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#SABR.mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.SABR.mean" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stochasticprocess.SABR.variance">
+<code class="descname">variance</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#SABR.variance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.SABR.variance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stochasticprocess.StochasticProcess">
+<em class="property">class </em><code class="descclassname">stochasticprocess.</code><code class="descname">StochasticProcess</code><span class="sig-paren">(</span><em>start</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#StochasticProcess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.StochasticProcess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="stochasticprocess.StochasticProcess.diffusion_driver">
+<code class="descname">diffusion_driver</code><a class="headerlink" href="#stochasticprocess.StochasticProcess.diffusion_driver" title="Permalink to this definition">¶</a></dt>
+<dd><p>diffusion driver are the underlying <cite>dW</cite> of each process <cite>X</cite> in a SDE like <cite>dX = m dt + s dW</cite>
+:return list(StochasticProcess):</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stochasticprocess.StochasticProcess.evolve">
+<code class="descname">evolve</code><span class="sig-paren">(</span><em>x</em>, <em>s</em>, <em>e</em>, <em>q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#StochasticProcess.evolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.StochasticProcess.evolve" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>float</em>) &#8211; current state value, i.e. value before evolution step</li>
+<li><strong>s</strong> (<em>float</em>) &#8211; current point in time, i.e. start point of next evolution step</li>
+<li><strong>e</strong> (<em>float</em>) &#8211; next point in time, i.e. end point of evolution step</li>
+<li><strong>q</strong> (<em>float</em>) &#8211; standard normal random number to do step</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return float:</th><td class="field-body"><p class="first last">next state value, i.e. value after evolution step</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>evolves process state <cite>x</cite> from <cite>s</cite> to <cite>e</cite> in time depending of standard normal random variable <cite>q</cite></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stochasticprocess.WienerProcess">
+<em class="property">class </em><code class="descclassname">stochasticprocess.</code><code class="descname">WienerProcess</code><span class="sig-paren">(</span><em>mu=0.0</em>, <em>sigma=1.0</em>, <em>start=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#WienerProcess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.WienerProcess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#stochasticprocess.StochasticProcess" title="stochasticprocess.StochasticProcess"><code class="xref py py-class docutils literal"><span class="pre">stochasticprocess.StochasticProcess</span></code></a></p>
+<p>class implementing general Gauss process between grid dates</p>
+<dl class="method">
+<dt id="stochasticprocess.WienerProcess.evolve">
+<code class="descname">evolve</code><span class="sig-paren">(</span><em>x</em>, <em>s</em>, <em>e</em>, <em>q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#WienerProcess.evolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.WienerProcess.evolve" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stochasticprocess.WienerProcess.mean">
+<code class="descname">mean</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#WienerProcess.mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.WienerProcess.mean" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="stochasticprocess.WienerProcess.variance">
+<code class="descname">variance</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticprocess.html#WienerProcess.variance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticprocess.WienerProcess.variance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="stochastic-process-simulation">
+<h2>Stochastic Process Simulation<a class="headerlink" href="#stochastic-process-simulation" title="Permalink to this headline">¶</a></h2>
+<img src="_images/inheritance-5d8e5a87f9313448bffaa95944b617b79efe8bbf.png" alt="Inheritance diagram of stochasticproducer" usemap="#inheritanceb42a658dee" class="inheritance"/>
+<map id="inheritanceb42a658dee" name="inheritanceb42a658dee">
+<area shape="rect" id="node1" href="#engine.Producer" target="_top" title="abstract class implementing simple producer for a model between grid dates" alt="" coords="3,18,76,32"/>
+<area shape="rect" id="node2" href="#producers.MultiProducer" target="_top" title="producers.MultiProducer" alt="" coords="156,3,257,18"/>
+<area shape="rect" id="node4" href="#stochasticproducer.GaussEvolutionFunctionProducer" target="_top" title="class implementing general Gauss process between grid dates" alt="" coords="105,32,308,47"/>
+<area shape="rect" id="node3" href="#stochasticproducer.CorrelatedGaussEvolutionProducer" target="_top" title="class implementing general correlated Gauss process between grid dates" alt="" coords="337,3,547,18"/>
+<area shape="rect" id="node6" href="#stochasticproducer.MultiGaussEvolutionProducer" target="_top" title="class implementing multi variant GaussEvolutionProducer" alt="" coords="576,3,765,18"/>
+<area shape="rect" id="node5" href="#stochasticproducer.GaussEvolutionProducer" target="_top" title="producer to bring diffusion process to life" alt="" coords="356,32,528,47"/>
+</map>
+<img src="_images/inheritance-19d73d652c045d0b59ed7c080ac474b00e78b2a6.png" alt="Inheritance diagram of stochasticconsumer" usemap="#inheritance6fab0775eb" class="inheritance"/>
+<map id="inheritance6fab0775eb" name="inheritance6fab0775eb">
+<area shape="rect" id="node1" href="#consumers.TransposedConsumer" target="_top" title="TransposedConsumer returns sample distribution per grid point not per sample path" alt="" coords="122,20,272,36"/>
+<area shape="rect" id="node3" href="#stochasticconsumer.StatisticsConsumer" target="_top" title="run basic statistics on storage consumer result per time slice" alt="" coords="307,4,481,20"/>
+<area shape="rect" id="node5" href="#stochasticconsumer.TimeWaveConsumer" target="_top" title="stochasticconsumer.TimeWaveConsumer" alt="" coords="304,36,484,52"/>
+<area shape="rect" id="node2" href="#engine.Consumer" target="_top" title="base class for simulation consumers" alt="" coords="4,20,89,36"/>
+<area shape="rect" id="node4" href="#stochasticconsumer.StochasticProcessStatisticsConsumer" target="_top" title="run basic statistics on storage consumer result as a stochastic process" alt="" coords="517,4,764,20"/>
+</map>
+<span class="target" id="module-stochasticproducer"></span><p>module containing stochastic process model producer</p>
+<dl class="class">
+<dt id="stochasticproducer.CorrelatedGaussEvolutionProducer">
+<em class="property">class </em><code class="descclassname">stochasticproducer.</code><code class="descname">CorrelatedGaussEvolutionProducer</code><span class="sig-paren">(</span><em>producers</em>, <em>correlation=None</em>, <em>diffusion_driver=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticproducer.html#CorrelatedGaussEvolutionProducer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticproducer.CorrelatedGaussEvolutionProducer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#producers.MultiProducer" title="producers.MultiProducer"><code class="xref py py-class docutils literal"><span class="pre">producers.MultiProducer</span></code></a></p>
+<p>class implementing general correlated Gauss process between grid dates</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>producers</strong> (<em>list</em><em>(</em><a class="reference internal" href="#stochasticproducer.GaussEvolutionProducer" title="stochasticproducer.GaussEvolutionProducer"><em>GaussEvolutionProducer</em></a><em>)</em><em></em>) &#8211; list of producers to evolve</li>
+<li><strong>or dict</strong><strong>(</strong><strong></strong><strong>(</strong><strong>StochasticProcess</strong><strong>, </strong><strong>StochasticProcess</strong><strong>)</strong><strong></strong> (<em>list</em><em>(</em><em>list</em><em>(</em><em>float</em><em>)</em><em></em><em>)</em><em></em>) &#8211; float) or None correlation:
+correlation matrix of underlying multivariate Gauss process of diffusion drivers.
+If <cite>dict</cite> keys must be pairs of diffusion drivers, diagonal and zero entries can be omitted.
+If not give, all drives are evolve independently.</li>
+<li><strong>or None diffusion_driver</strong> (<em>list</em><em>(</em><a class="reference internal" href="#stochasticprocess.StochasticProcess" title="stochasticprocess.StochasticProcess"><em>StochasticProcess</em></a><em>)</em><em></em>) &#8211; list of diffusion drivers
+indexing the correlation matrix. If not given and <cite>correlation</cite> is not an IndexMatrix,
+e.g. comes already with list of drivers, it is assumed that each process producer has different drivers
+and the correlation is order in the same way.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="stochasticproducer.CorrelatedGaussEvolutionProducer.evolve">
+<code class="descname">evolve</code><span class="sig-paren">(</span><em>new_date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticproducer.html#CorrelatedGaussEvolutionProducer.evolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticproducer.CorrelatedGaussEvolutionProducer.evolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>evolve to the new process state at the next date</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>new_date</strong> (<em>date</em>) &#8211; date or point in time of the new state</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return State:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stochasticproducer.GaussEvolutionFunctionProducer">
+<em class="property">class </em><code class="descclassname">stochasticproducer.</code><code class="descname">GaussEvolutionFunctionProducer</code><span class="sig-paren">(</span><em>func=None</em>, <em>initial_state=None</em>, <em>length=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticproducer.html#GaussEvolutionFunctionProducer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticproducer.GaussEvolutionFunctionProducer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#engine.Producer" title="engine.Producer"><code class="xref py py-class docutils literal"><span class="pre">engine.Producer</span></code></a></p>
+<p>class implementing general Gauss process between grid dates</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>func</strong> (<em>callable</em>) &#8211; evolve function, e.g. <cite>lambda x, s, e, q: x + sqrt(e - s) * q</cite> by default
+with <cite>x</cite> current state value, <cite>s</cite> current point in time, i.e. start point of next evolution step,
+<cite>e</cite> next point in time, i.e. end point of evolution step, <cite>q</cite> standard normal random number to do step</li>
+<li><strong>initial_state</strong> &#8211; initial state (value) of evolution,</li>
+<li><strong>or None length</strong> (<em>int</em>) &#8211; length of <cite>q</cite> as a list of Gauss random numbers,
+if <cite>None</cite> or <cite>0</cite> the evolution function <cite>func</cite> will be invoked with <cite>q</cite>
+not as a list but a float random number.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>class implementing general Gauss process between grid dates and provides state to any evolve style function
+<cite>foo(x, s, e, q)</cite> with <cite>x</cite> last state, <cite>s</cite> last state time, <cite>e</cite> current point in time and
+<cite>q</cite> current Gauss process state</p>
+<dl class="method">
+<dt id="stochasticproducer.GaussEvolutionFunctionProducer.evolve">
+<code class="descname">evolve</code><span class="sig-paren">(</span><em>new_date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticproducer.html#GaussEvolutionFunctionProducer.evolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticproducer.GaussEvolutionFunctionProducer.evolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>evolve to the new process state at the next date</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>new_date</strong> (<em>date</em>) &#8211; date or point in time of the new state</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return State:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stochasticproducer.GaussEvolutionProducer">
+<em class="property">class </em><code class="descclassname">stochasticproducer.</code><code class="descname">GaussEvolutionProducer</code><span class="sig-paren">(</span><em>process</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticproducer.html#GaussEvolutionProducer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticproducer.GaussEvolutionProducer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#stochasticproducer.GaussEvolutionFunctionProducer" title="stochasticproducer.GaussEvolutionFunctionProducer"><code class="xref py py-class docutils literal"><span class="pre">stochasticproducer.GaussEvolutionFunctionProducer</span></code></a></p>
+<p>producer to bring diffusion process to life</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>process</strong> (<a class="reference internal" href="#stochasticprocess.StochasticProcess" title="stochasticprocess.StochasticProcess"><em>StochasticProcess</em></a>) &#8211; diffusion process to evolve</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="stochasticproducer.MultiGaussEvolutionProducer">
+<em class="property">class </em><code class="descclassname">stochasticproducer.</code><code class="descname">MultiGaussEvolutionProducer</code><span class="sig-paren">(</span><em>process_list</em>, <em>correlation=None</em>, <em>diffusion_driver=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticproducer.html#MultiGaussEvolutionProducer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticproducer.MultiGaussEvolutionProducer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#stochasticproducer.CorrelatedGaussEvolutionProducer" title="stochasticproducer.CorrelatedGaussEvolutionProducer"><code class="xref py py-class docutils literal"><span class="pre">stochasticproducer.CorrelatedGaussEvolutionProducer</span></code></a></p>
+<p>class implementing multi variant GaussEvolutionProducer</p>
+</dd></dl>
+
+<span class="target" id="module-stochasticconsumer"></span><dl class="class">
+<dt id="stochasticconsumer.StatisticsConsumer">
+<em class="property">class </em><code class="descclassname">stochasticconsumer.</code><code class="descname">StatisticsConsumer</code><span class="sig-paren">(</span><em>func=None</em>, <em>statistics=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticconsumer.html#StatisticsConsumer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticconsumer.StatisticsConsumer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#consumers.TransposedConsumer" title="consumers.TransposedConsumer"><code class="xref py py-class docutils literal"><span class="pre">consumers.TransposedConsumer</span></code></a></p>
+<p>run basic statistics on storage consumer result per time slice</p>
+<dl class="method">
+<dt id="stochasticconsumer.StatisticsConsumer.finalize">
+<code class="descname">finalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticconsumer.html#StatisticsConsumer.finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticconsumer.StatisticsConsumer.finalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>finalize for StatisticsConsumer</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stochasticconsumer.StochasticProcessStatisticsConsumer">
+<em class="property">class </em><code class="descclassname">stochasticconsumer.</code><code class="descname">StochasticProcessStatisticsConsumer</code><span class="sig-paren">(</span><em>func=None</em>, <em>statistics=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticconsumer.html#StochasticProcessStatisticsConsumer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticconsumer.StochasticProcessStatisticsConsumer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#stochasticconsumer.StatisticsConsumer" title="stochasticconsumer.StatisticsConsumer"><code class="xref py py-class docutils literal"><span class="pre">stochasticconsumer.StatisticsConsumer</span></code></a></p>
+<p>run basic statistics on storage consumer result as a stochastic process</p>
+<dl class="method">
+<dt id="stochasticconsumer.StochasticProcessStatisticsConsumer.finalize">
+<code class="descname">finalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticconsumer.html#StochasticProcessStatisticsConsumer.finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticconsumer.StochasticProcessStatisticsConsumer.finalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>finalize for StochasticProcessStatisticsConsumer</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stochasticconsumer.TimeWaveConsumer">
+<em class="property">class </em><code class="descclassname">stochasticconsumer.</code><code class="descname">TimeWaveConsumer</code><span class="sig-paren">(</span><em>func=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticconsumer.html#TimeWaveConsumer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticconsumer.TimeWaveConsumer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#consumers.TransposedConsumer" title="consumers.TransposedConsumer"><code class="xref py py-class docutils literal"><span class="pre">consumers.TransposedConsumer</span></code></a></p>
+<p>initiatlizes consumer by providing a function
+:param func: consumer function with exact 1 argument
+which will consume the producer state. Default will return <cite>state.value</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+</tbody>
+</table>
+<dl class="method">
+<dt id="stochasticconsumer.TimeWaveConsumer.finalize">
+<code class="descname">finalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochasticconsumer.html#TimeWaveConsumer.finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochasticconsumer.TimeWaveConsumer.finalize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="releases.html" class="btn btn-neutral float-right" title="Releases" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="tutorials.html" class="btn btn-neutral" title="Tutorial" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Deutsche Postbank.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'alpha',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

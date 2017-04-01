@@ -1,0 +1,7 @@
+<map id="inheritance6fab0775eb" name="inheritance6fab0775eb">
+<area shape="rect" id="node1" href="#consumers.TransposedConsumer" target="_top" title="TransposedConsumer returns sample distribution per grid point not per sample path" alt="" coords="122,20,272,36"/>
+<area shape="rect" id="node3" href="#stochasticconsumer.StatisticsConsumer" target="_top" title="run basic statistics on storage consumer result per time slice" alt="" coords="307,4,481,20"/>
+<area shape="rect" id="node5" href="#stochasticconsumer.TimeWaveConsumer" target="_top" title="stochasticconsumer.TimeWaveConsumer" alt="" coords="304,36,484,52"/>
+<area shape="rect" id="node2" title="base class for simulation consumers" alt="" coords="4,20,89,36"/>
+<area shape="rect" id="node4" href="#stochasticconsumer.StochasticProcessStatisticsConsumer" target="_top" title="run basic statistics on storage consumer result as a stochastic process" alt="" coords="517,4,764,20"/>
+</map>
