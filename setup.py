@@ -4,9 +4,9 @@
 #  ------------
 #  timewave, a classical time evolution simulation engine in python.
 #
-#  Author:  sonntagsgesicht <sonntagsgesicht@github.com>
+#  Author:  pbrisk <pbrisk@github.com>
 #  Copyright: 2016, 2017 Deutsche Postbank AG
-#  Website: https://github.com/sonntagsgesicht/timewave
+#  Website: https://github.com/pbrisk/timewave
 #  License: APACHE Version 2 License (see LICENSE file)
 
 
@@ -21,10 +21,10 @@ setup(
     name='timewave',
     description='timewave, a classical time evolution simulation engine in python.',
     version='0.3',
-    author='Deutsche Postbank AG [sonntagsgesicht]',
-    author_email='sonntagsgesicht@icloud.com',
-    url='https://github.com/sonntagsgesicht/timewave',
-    bugtrack_url='https://github.com/sonntagsgesicht/timewave/issues',
+    author='Deutsche Postbank AG [pbrisk]',
+    author_email='pbrisk@icloud.com',
+    url='https://github.com/pbrisk/timewave',
+    bugtrack_url='https://github.com/pbrisk/timewave/issues',
     license='Apache License 2.0',
     packages=['timewave'],
     long_description=codecs.open('README.rst', encoding='utf-8').read(),

@@ -4,9 +4,9 @@
 #  ------------
 #  timewave, a classical time evolution simulation engine in python.
 #
-#  Author:  sonntagsgesicht <sonntagsgesicht@github.com>
+#  Author:  pbrisk <pbrisk@github.com>
 #  Copyright: 2016, 2017 Deutsche Postbank AG
-#  Website: https://github.com/sonntagsgesicht/timewave
+#  Website: https://github.com/pbrisk/timewave
 #  License: APACHE Version 2 License (see LICENSE file)
 
 

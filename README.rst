@@ -4,7 +4,7 @@ timewave simulation engine
 timewave, a classical time evolution simulation engine in python. It
 consists of four building blocks.
 
-|Codeship Status for sonntagsgesicht/pace|
+|Codeship Status for pbrisk/pace|
 
 The State
 ---------
@@ -102,5 +102,5 @@ finish simulation (kind of reduce method)
 
 before returning results from run.
 
-.. |Codeship Status for sonntagsgesicht/pace| image:: https://codeship.com/projects/e5f5fcb0-9d66-0134-5a6b-6ae80fc9d0de/status?branch=master
+.. |Codeship Status for pbrisk/pace| image:: https://codeship.com/projects/e5f5fcb0-9d66-0134-5a6b-6ae80fc9d0de/status?branch=master
    :target: https://codeship.com/projects/188639
