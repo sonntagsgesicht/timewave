@@ -4,7 +4,7 @@
 #  ------------
 #  timewave, a classical time evolution simulation engine in python.
 #
-#  Author:  pbrisk <pbrisk@github.com>
+#  Author:  pbrisk <pbrisk@icloud.com>
 #  Copyright: 2016, 2017 Deutsche Postbank AG
 #  Website: https://github.com/pbrisk/timewave
 #  License: APACHE Version 2 License (see LICENSE file)
@@ -38,13 +38,8 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.5',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Education',
