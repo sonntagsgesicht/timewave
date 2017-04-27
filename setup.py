@@ -20,7 +20,7 @@ except ImportError:
 setup(
     name='timewave',
     description='timewave, a classical time evolution simulation engine in python.',
-    version='0.3',
+    version='0.4',
     author='Deutsche Postbank AG [pbrisk]',
     author_email='pbrisk@icloud.com',
     url='https://github.com/pbrisk/timewave',
@@ -38,7 +38,6 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
