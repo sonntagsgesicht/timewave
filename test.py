@@ -21,8 +21,6 @@ from timewave.stochasticprocess import WienerProcess, OrnsteinUhlenbeckProcess, 
     SABR, MultiGauss
 from timewave.stochasticproducer import GaussEvolutionProducer, MultiGaussEvolutionProducer
 from timewave.stochasticconsumer import StatisticsConsumer, StochasticProcessStatisticsConsumer, TimeWaveConsumer
-from timewave.pyprocess import Wiener_process, GBM_process, OU_process
-from timewave.pyprocessproducer import PyProcessProducer, SimplePyProcessProducer
 from timewave.plot import plot_consumer_result, plot_timewave_result
 
 DISPLAY_RESULTS = False
@@ -235,59 +233,6 @@ class GeometricBrownianMotionProducerUnitTests(TestCase):
             s_variance = sqrt(sum([x * x for x in w]) / len(w) - s_mean ** 2)
             self.assertAlmostEqual(mean(g), s_mean, 0)
             self.assertAlmostEqual(variance(g), s_variance, 0)
-
-
-class PyProcessUnitTests(TestCase):
-    def setUp(self):
-        self.plot = None
-
-    def tearDown(self):
-        if __name__ == '__main__' and DISPLAY_RESULTS and self.plot:
-            self.plot.close()
-
-    def test_py_process(self):
-        """
-        Monte Carlo simulation of Brownian motion with constant volatility,
-        hence initial state should be reached on average
-        """
-
-        grid = range(0, 20)  # fixme: increase num of path to 100
-        process_list = list()
-        process_list.append(Wiener_process(1, 1))
-        process_list.append(GBM_process(.0, .01))
-        process_list.append(OU_process(0.1, 0., 0.05))
-
-        for proc in process_list:
-            res = Engine(PyProcessProducer(proc), StatisticsConsumer()).run(grid, 5000)
-
-            # check that on average there is no movement
-            for p, s in res:
-                if p > 0:  # fixme issue at p==0
-                    self.assertAlmostEqual(proc.mean(float(p)), s.mean, 0)
-                    self.assertAlmostEqual(proc.mean(float(p)), s.median, 0)
-                    self.assertAlmostEqual(proc.var(float(p)), s.variance, 0)
-
-    def test_simple_py_process(self):
-        """
-        Monte Carlo simulation of Brownian motion with constant volatility,
-        hence initial state should be reached on average
-        """
-
-        grid = range(0, 20)  # fixme: increase num of path to 100
-        process_list = list()
-        process_list.append(Wiener_process(1, 1))
-        process_list.append(GBM_process(.0, .01))
-        process_list.append(OU_process(0.1, 0., 0.05))
-
-        for proc in process_list:
-            res = Engine(SimplePyProcessProducer(proc), StatisticsConsumer()).run(grid, 5000)
-
-            # check that on average there is no movement
-            for p, s in res:
-                if p > 0:  # fixme issue at p==0
-                    self.assertAlmostEqual(proc.mean(float(p)), s.mean, 0)
-                    self.assertAlmostEqual(proc.mean(float(p)), s.median, 0)
-                    self.assertAlmostEqual(proc.var(float(p)), s.variance, 0)
 
 
 class GaussEvolutionProducerUnitTests(TestCase):

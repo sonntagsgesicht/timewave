@@ -1,7 +1,7 @@
 from test import MultiGaussEvolutionProducerUnitTests
 
-def do_test(t):
 
+def do_test(t):
     c = MultiGaussEvolutionProducerUnitTests(t)
     c.setUp()
     getattr(c, t)()
