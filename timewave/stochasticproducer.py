@@ -74,6 +74,17 @@ class GaussEvolutionProducer(GaussEvolutionFunctionProducer):
         super(GaussEvolutionProducer, self).__init__(process.evolve, State(process.start), length)
 
 
+class _FakeGaussRandom(list):
+
+    def seed(self, *args):
+        pass
+
+    def gauss(self, *args):
+        return self.pop(0)
+
+
+
+
 class CorrelatedGaussEvolutionProducer(MultiProducer):
     """
     class implementing general correlated Gauss process between grid dates
@@ -86,7 +97,7 @@ class CorrelatedGaussEvolutionProducer(MultiProducer):
         :param list(list(float)) or dict((StochasticProcess, StochasticProcess): float) or None correlation:
             correlation matrix of underlying multivariate Gauss process of diffusion drivers.
             If `dict` keys must be pairs of diffusion drivers, diagonal and zero entries can be omitted.
-            If not give, all drives are evolve independently.
+            If not give, all drivers evolve independently.
         :param list(StochasticProcess) or None diffusion_driver: list of diffusion drivers
             indexing the correlation matrix. If not given and `correlation` is not an IndexMatrix,
             e.g. comes already with list of drivers, it is assumed that each process producer has different drivers
@@ -94,14 +105,6 @@ class CorrelatedGaussEvolutionProducer(MultiProducer):
         """
 
         # faking random().gauss()
-        class _FakeGaussRandom(list):
-
-            def seed(self, *args):
-                pass
-
-            def gauss(self, *args):
-                return self.pop(0)
-
         for p in producers:
             p.random = _FakeGaussRandom()
 
@@ -144,7 +147,7 @@ class CorrelatedGaussEvolutionProducer(MultiProducer):
                     if d not in drivers:
                         drivers.append(d)
             diffusion_driver = tuple(drivers)
-            # require enough correlation because here we cannot decide which drives
+            # require enough correlation because here we cannot decide which drivers
             # should be independent or omitted
             assert len(diffusion_driver) == len(correlation)
 

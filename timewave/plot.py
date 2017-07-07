@@ -1,22 +1,20 @@
 
 
-from os import sep, mkdir, path
+from os import sep
 
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import axes3d
 from matplotlib import cm
 
 
-def plot_consumer_result(result, grid=None, title='', path_name=None):
+def plot_consumer_result(result, grid=None, title='', path=None):
     for l in result:
         plt.plot(grid, l)
     plt.title(title)
     plt.xlabel("time, $t$")
     plt.ylabel("position of process")
-    if path_name:
-        if not path.exists(path_name):
-            mkdir(path_name)
-        plt.savefig(path_name + sep + title + '.pdf')
+    if path:
+        plt.savefig(path + sep + title + '.pdf')
         plt.close()
 
 

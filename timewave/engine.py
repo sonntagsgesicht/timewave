@@ -85,11 +85,11 @@ class Engine(object):
     """
 
     def __init__(self, producer=None, consumer=None):
+
+        assert isinstance(producer, Producer) and isinstance(consumer, Consumer)
         self.producer = producer
-        if isinstance(consumer, (tuple, list)):
-            self.consumer = consumer
-        else:
-            self.consumer = [consumer]
+        self.consumer = consumer
+
         self.grid = None
         self.num_of_paths = None
         self.num_of_workers = None
@@ -117,8 +117,7 @@ class Engine(object):
 
         # pre processing
         self.producer.initialize(self.grid, self.num_of_paths, self.seed)
-        for c in self.consumer:
-            c.initialize(self.grid, self.num_of_paths, self.seed)
+        self.consumer.initialize(self.grid, self.num_of_paths, self.seed)
 
         if num_of_workers:
             # processing
@@ -144,17 +143,19 @@ class Engine(object):
             for worker in workers:
                 worker.start()
 
+
             # post processing
             for _ in range(num_of_workers):
-                self.consumer[-1].get(queue.get())
+                self.consumer.get(queue.get())
             for worker in workers:
                 worker.join()
         else:
             self._run_process(0, num_of_paths)
 
-        for c in self.consumer:
-            c.finalize()
-        return self.consumer[-1].result
+
+
+        self.consumer.finalize()
+        return self.consumer.result
 
     def _run_parallel_process_with_profiling(self, start_path, stop_path, queue, filename):
         """
@@ -169,7 +170,7 @@ class Engine(object):
         """
         process_num = int(current_process().name.split('-', 2)[1])
         self._run_process(start_path, stop_path, process_num)
-        queue.put(self.consumer[-1].put())
+        queue.put(self.consumer.put())
 
     def _run_process(self, start_path, stop_path, process_num=0):
         """
@@ -177,17 +178,14 @@ class Engine(object):
         """
         # pre processing
         self.producer.initialize_worker(process_num)
-
-        for c in self.consumer:
-            c.initialize_worker(process_num)
+        self.consumer.initialize_worker(process_num)
 
         # processing
         for path in range(start_path, stop_path):
             self._run_path(path)
 
         # post processing
-        for c in self.consumer:
-            c.finalize_worker(process_num)
+        self.consumer.finalize_worker(process_num)
 
     def _run_path(self, path_num):
         """
@@ -198,18 +196,15 @@ class Engine(object):
         """
         # pre processing
         self.producer.initialize_path(path_num)
-        for c in self.consumer:
-            c.initialize_path(path_num)
+        self.consumer.initialize_path(path_num)
 
         # processing
         for new_date in self.grid:
             state = self.producer.evolve(new_date)
-            for c in self.consumer:
-                state = c.consume(state)
+            self.consumer.consume(state)
 
         # post processing
-        for c in self.consumer:
-            c.finalize_path(path_num)
+        self.consumer.finalize_path(path_num)
 
 
 class Consumer(object):

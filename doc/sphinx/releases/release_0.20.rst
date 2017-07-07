@@ -1,4 +1,4 @@
 Release 0.2
 ===========
 
-Release date was January 31, 2017
+Release date was April 2nd, 2017

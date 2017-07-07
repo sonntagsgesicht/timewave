@@ -3,8 +3,8 @@
 UnitTests for timewave simulation engine
 """
 from datetime import datetime
-from unittest import TestCase, main
-from os import system, getcwd, sep
+import unittest
+from os import system, getcwd, sep, makedirs, path
 from math import exp, sqrt
 
 try:
@@ -25,6 +25,10 @@ from timewave.plot import plot_consumer_result, plot_timewave_result
 
 DISPLAY_RESULTS = False
 PROFILING = False
+
+p = '.' + sep + 'pdf'
+if not path.exists(p):
+    makedirs('.' + sep + 'pdf')
 
 
 class WienerProcessProducer(Producer):
@@ -101,7 +105,7 @@ class PlotTimeWaveConsumer(TimeWaveConsumer):
         plot_timewave_result(self.result, self._title, '.' + sep + 'pdf')
 
 
-class BrownianMotionProducerUnitTests(TestCase):
+class BrownianMotionProducerUnitTests(unittest.TestCase):
     def setUp(self):
         self.plot = None
 
@@ -166,7 +170,7 @@ class BrownianMotionProducerUnitTests(TestCase):
             self.assertAlmostEqual(float(g), vol, 0)
 
 
-class GeometricBrownianMotionProducerUnitTests(TestCase):
+class GeometricBrownianMotionProducerUnitTests(unittest.TestCase):
     def setUp(self):
         self.plot = None
 
@@ -235,7 +239,7 @@ class GeometricBrownianMotionProducerUnitTests(TestCase):
             self.assertAlmostEqual(variance(g), s_variance, 0)
 
 
-class GaussEvolutionProducerUnitTests(TestCase):
+class GaussEvolutionProducerUnitTests(unittest.TestCase):
     def setUp(self):
         self.plot = None
 
@@ -311,7 +315,7 @@ class GaussEvolutionProducerUnitTests(TestCase):
             self.assertAlmostEqual(process.variance(p), s.variance, 0)
 
 
-class MultiProducerUnitTests(TestCase):
+class MultiProducerUnitTests(unittest.TestCase):
     def setUp(self):
         self.plot = None
 
@@ -330,7 +334,7 @@ class MultiProducerUnitTests(TestCase):
                 self.assertAlmostEqual(x, y - shift * i)
 
 
-class MultiGaussEvolutionProducerUnitTests(TestCase):
+class MultiGaussEvolutionProducerUnitTests(unittest.TestCase):
     def setUp(self):
         self.plot = None
 
@@ -423,7 +427,7 @@ class MultiGaussEvolutionProducerUnitTests(TestCase):
         plt.close()
 
 
-class DeterministicProducerTests(TestCase):
+class DeterministicProducerTests(unittest.TestCase):
     def setUp(self):
         self.plot = None
 
@@ -458,25 +462,30 @@ class DeterministicProducerTests(TestCase):
 
 
 if __name__ == "__main__":
+    import sys
+    import os
+
     start_time = datetime.now()
 
     print('')
     print('======================================================================')
     print('')
     print('run %s' % __file__)
-    print('in %s' % getcwd())
+    print('in %s' % os.getcwd())
     print('started  at %s' % str(start_time))
     print('')
     print('----------------------------------------------------------------------')
     print('')
 
-    main(verbosity=2)
+    suite = unittest.TestLoader().loadTestsFromModule(__import__("__main__"))
+    testrunner = unittest.TextTestRunner(stream=sys.stdout, descriptions=2, verbosity=2)
+    testrunner.run(suite)
 
     print('')
     print('======================================================================')
     print('')
     print('ran %s' % __file__)
-    print('in %s' % getcwd())
+    print('in %s' % os.getcwd())
     print('started  at %s' % str(start_time))
     print('finished at %s' % str(datetime.now()))
     print('')
