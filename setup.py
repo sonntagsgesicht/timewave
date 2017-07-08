@@ -19,7 +19,7 @@ except ImportError:
 
 setup(
     name='timewave',
-    description='timewave, a classical time evolution simulation engine in python.',
+    description='timewave, a stochastic process evolution simulation engine in python.',
     version='0.5',
     author='Deutsche Postbank AG [pbrisk]',
     author_email='pbrisk_at_github@icloud.com',

@@ -1,3 +1,15 @@
+========
+timewave
+========
+
+.. image:: https://img.shields.io/codeship/941240c0-4617-0135-c3c1-3602b75f498a/master.svg
+    :target: https://codeship.com//projects/231328
+
+.. image:: https://readthedocs.org/projects/timewave/badge
+    :target: http://timewave.readthedocs.io
+
+a stochastic process evolution simulation engine in python.
+
 timewave simulation engine
 ==========================
 
