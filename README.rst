@@ -10,13 +10,10 @@ timewave
 
 a stochastic process evolution simulation engine in python.
 
-timewave simulation engine
-==========================
+simulation engine
+=================
 
-timewave, a classical time evolution simulation engine in python. It
-consists of four building blocks.
-
-|Codeship Status for pbrisk/pace|
+timewave consists of four building blocks.
 
 The State
 ---------
