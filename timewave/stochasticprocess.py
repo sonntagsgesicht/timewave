@@ -42,6 +42,25 @@ class StochasticProcess(object):
         """
         return 0.0
 
+    def mean(self, t):
+        """ expected value of time :math:`t` increment
+
+        :param t:
+        :rtype float
+        :return:
+        """
+        return 0.0
+
+    def variance(self, t):
+        """ second central moment of time :math:`t` increment
+
+        :param t:
+        :rtype float
+        :return:
+        """
+        return 0.0
+
+
 
 class MultivariateStochasticProcess(StochasticProcess):
 
