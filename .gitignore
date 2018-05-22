@@ -7,4 +7,5 @@ dist/
 doc/sphinx/_build/
 doc/sphinx/_static/
 doc/sphinx/_templates/
+pdf/
 .DS_Store
