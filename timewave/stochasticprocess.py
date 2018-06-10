@@ -16,6 +16,9 @@ class StochasticProcess(object):
     def __len__(self):
         return len(self.diffusion_driver)
 
+    def __str__(self):
+        return self.__class__.__name__ + '()'
+
     @property
     def diffusion_driver(self):
         """
@@ -61,12 +64,6 @@ class StochasticProcess(object):
         return 0.0
 
 
-
-class MultivariateStochasticProcess(StochasticProcess):
-
-    pass
-
-
 class WienerProcess(StochasticProcess):
     """
     class implementing general Gauss process between grid dates
@@ -76,6 +73,9 @@ class WienerProcess(StochasticProcess):
         super(WienerProcess, self).__init__(start)
         self._mu = mu
         self._sigma = sigma
+
+    def __str__(self):
+        return 'N(mu=%0.4f, sigma=%0.4f)' % (self._mu, self._sigma)
 
     def _drift(self, x, s, e):
         return self._mu * (e - s)
@@ -115,6 +115,9 @@ class OrnsteinUhlenbeckProcess(StochasticProcess):
         self._mu = mu
         self._sigma = sigma
 
+    def __str__(self):
+        return 'OU(theta=%0.4f, mu=%0.4f, sigma=%0.4f)' % (self._theta, self._mu, self._sigma)
+
     def _drift(self, x, s, e):
         if self._theta:
             return x * exp(-self._theta * float(e - s)) + self._mu * (1. - exp(-self._theta * float(e - s)))
@@ -123,7 +126,7 @@ class OrnsteinUhlenbeckProcess(StochasticProcess):
 
     def _diffusion(self, x, s, e):
         # return self._sigma * (1. - exp(-self._theta * float(e - s)))
-        return sqrt(self.variance(float(e-s)))
+        return sqrt(self.variance(float(e - s)))
 
     def evolve(self, x, s, e, q):
         return self._drift(x, s, e) + self._diffusion(x, s, e) * q
@@ -147,6 +150,9 @@ class GeometricBrownianMotion(WienerProcess):
         super(GeometricBrownianMotion, self).__init__(mu, sigma, start)
         self._diffusion_driver = super(GeometricBrownianMotion, self).diffusion_driver
 
+    def __str__(self):
+        return 'LN(mu=%0.4f, sigma=%0.4f)' % (self._mu, self._sigma)
+
     def evolve(self, x, s, e, q):
         return x * exp(super(GeometricBrownianMotion, self).evolve(0., s, e, q))
 
@@ -157,10 +163,15 @@ class GeometricBrownianMotion(WienerProcess):
         return self.start ** 2 * exp(2 * self._mu * t) * (exp(self._sigma ** 2 * t) - 1)
 
 
+class MultivariateStochasticProcess(StochasticProcess):
+    pass
+
+
 class SABR(MultivariateStochasticProcess):
     """
     class implementing the Hagan et al SABR model
     """
+
     def __init__(self, alpha=.1, beta=.2, nu=.3, rho=-.2, start=.05):
         super(SABR, self).__init__((start, alpha))
         self._blend_process = GeometricBrownianMotion(0.0)
@@ -169,27 +180,35 @@ class SABR(MultivariateStochasticProcess):
         self._rho = rho
         self._diffusion_driver = self._blend_process.diffusion_driver + self._vol_process.diffusion_driver
 
+    def __str__(self):
+        alpha = self._vol_process.start
+        beta = self._beta
+        nu = self._vol_process._sigma
+        rho = self._rho
+        return 'SABR(alpha=%0.4f, beta=%0.4f, nu=%0.4f, rho=%0.4f)' % (alpha, beta, nu, rho)
+
     def evolve(self, x, s, e, q):
         f, a = x
-        if e-s > 0:
+        if e - s > 0:
             q1, q2 = q
-            q2 = self._rho * q1 + sqrt(1.-self._rho ** 2) * q2
+            q2 = self._rho * q1 + sqrt(1. - self._rho ** 2) * q2
             a = self._vol_process.evolve(a, s, e, q2)
             sgn = -1. if f < 0. else 1.
-            f += sgn * abs(f) ** self._beta * sqrt(e-s) * a * q1
+            f += sgn * abs(f) ** self._beta * sqrt(e - s) * a * q1
         return f, a
 
     def mean(self, t):
         return self.start[0]
 
     def variance(self, t):
-        return self._vol_process.variance(t) * t   # todo give better sabr variance proxy
+        return self._vol_process.variance(t) * t  # todo give better sabr variance proxy
 
 
 class MultiGauss(MultivariateStochasticProcess):
     """
     class implementing multi dimensional brownian motion
     """
+
     def __init__(self, mu=list([0.]), covar=list([[1.]]), start=list([0.])):
         super(MultiGauss, self).__init__(start)
         self._mu = mu
@@ -197,6 +216,10 @@ class MultiGauss(MultivariateStochasticProcess):
         self._cholesky = None if covar is None else cholesky(covar).T
         self._variance = [1.] * self._dim if covar is None else [covar[i][i] for i in range(self._dim)]
         self._diffusion_driver = [WienerProcess(m, sqrt(s)) for m, s in zip(self._mu, self._variance)]
+
+    def __str__(self):
+        cov = self._cholesky.T * self._cholesky
+        return '%d-MultiGauss(mu=%s, cov=%s)' % (len(self), str(self._mu), str(cov))
 
     def _drift(self, x, s, e):
         return [m * (e - s) for m in self._mu]

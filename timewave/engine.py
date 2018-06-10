@@ -5,8 +5,10 @@ module containing simulation method related classes incl. multiprocessing suppor
 from cProfile import runctx
 from copy import copy
 from random import Random
+
 try:  # try accepted due to lack of multiprocessing on iOS Pythonista
     from multiprocessing import cpu_count, current_process, Process, Queue
+
     CPU_COUNT = cpu_count()
 except ImportError:
     cpu_count, current_process, Process, Queue = None, None, None, None
@@ -123,10 +125,10 @@ class Engine(object):
             # processing
             workers = list()
             queue = Queue()
-            path_per_worker = int(num_of_paths//num_of_workers)
+            path_per_worker = int(num_of_paths // num_of_workers)
             start_path, stop_path = 0, path_per_worker
             for i in range(num_of_workers):
-                if i == num_of_workers-1:
+                if i == num_of_workers - 1:
                     stop_path = num_of_paths  # ensure exact num of path as required
                 name = 'worker-%d' % i
                 if profiling:
@@ -143,7 +145,6 @@ class Engine(object):
             for worker in workers:
                 worker.start()
 
-
             # post processing
             for _ in range(num_of_workers):
                 self.consumer.get(queue.get())
@@ -151,8 +152,6 @@ class Engine(object):
                 worker.join()
         else:
             self._run_process(0, num_of_paths)
-
-
 
         self.consumer.finalize()
         return self.consumer.result
@@ -211,6 +210,7 @@ class Consumer(object):
     """
     base class for simulation consumers
     """
+
     def __init__(self, func=None):
         """
         initiatlizes consumer by providing a function
