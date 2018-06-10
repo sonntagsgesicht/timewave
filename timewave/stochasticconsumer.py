@@ -49,7 +49,9 @@ class StatisticsConsumer(TransposedConsumer):
         """finalize for StatisticsConsumer"""
         super(StatisticsConsumer, self).finalize()
         # run statistics on timewave slice w at grid point g
-        self.result = [(g, self.statistics(w)) for g, w in zip(self.grid, self.result)]
+        # self.result = [(g, self.statistics(w)) for g, w in zip(self.grid, self.result)]
+        # self.result = zip(self.grid, (self.statistics(w) for w in self.result))
+        self.result = zip(self.grid, map(self.statistics, self.result))
 
 
 class StochasticProcessStatisticsConsumer(StatisticsConsumer):

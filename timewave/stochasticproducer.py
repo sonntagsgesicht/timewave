@@ -83,8 +83,6 @@ class _FakeGaussRandom(list):
         return self.pop(0)
 
 
-
-
 class CorrelatedGaussEvolutionProducer(MultiProducer):
     """
     class implementing general correlated Gauss process between grid dates

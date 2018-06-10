@@ -297,7 +297,7 @@ class GaussEvolutionProducerUnitTests(unittest.TestCase):
             if self.plot3d:
                 self.plot3d.close()
 
-    def test_process(self):
+    def test_statistics(self):
         producer = GaussEvolutionProducer(self.process)
         consumer = StatisticsConsumer()
         stats = Engine(producer, consumer).run(self.grid, self.path)
@@ -467,7 +467,7 @@ class SabrUnitTests(unittest.TestCase):
             if self.plot3d:
                 self.plot3d.close()
 
-    def test_process(self):
+    def test_statistics(self):
         producer = GaussEvolutionProducer(self.process)
         consumer = StatisticsConsumer(lambda s: s.value[0])
         stats = Engine(producer, consumer).run(self.grid, 5000)
