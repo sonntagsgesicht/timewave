@@ -7,6 +7,8 @@ import unittest
 from os import system, getcwd, sep, makedirs, path
 from math import exp, sqrt
 
+import numpy as np
+
 try:
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import axes3d
@@ -17,13 +19,15 @@ except ImportError:
 from timewave.engine import Engine, Producer, Consumer
 from timewave.producers import MultiProducer, DeterministicProducer, StringReaderProducer
 from timewave.consumers import TransposedConsumer, ConsumerConsumer, MultiConsumer, StringWriterConsumer
-from timewave.stochasticprocess import WienerProcess, OrnsteinUhlenbeckProcess, GeometricBrownianMotion, \
-    SABR, MultiGauss
+from timewave.stochasticprocess.gauss import WienerProcess, OrnsteinUhlenbeckProcess, GeometricBrownianMotion
+from timewave.stochasticprocess.multifactor import SABR, MultiGauss
+from timewave.stochasticprocess.markovchain import FiniteStateMarkovChain, FiniteStateInhomogenuousMarkovChain, \
+    FiniteStateContinuousTimeMarkovChain
 from timewave.stochasticproducer import GaussEvolutionProducer, MultiGaussEvolutionProducer
-from timewave.stochasticconsumer import StatisticsConsumer, StochasticProcessStatisticsConsumer, TimeWaveConsumer
+from timewave.stochasticconsumer import StatisticsConsumer, StochasticProcessStatisticsConsumer, TimeWaveConsumer, \
+    _MultiStatistics
 from timewave.plot import plot_consumer_result, plot_timewave_result
 
-DISPLAY_RESULTS = False
 PROFILING = False
 
 p = '.' + sep + 'pdf'
@@ -87,38 +91,9 @@ class GeometricBrownianMotionProducer(Producer):
         return self.state
 
 
-# -- PlotConsumer ---
-
-class PlotConsumer(Consumer):
-    def __init__(self, title='sample paths', func=None):
-        super(PlotConsumer, self).__init__(func)
-        self._title = title
-
-    def finalize(self):
-        super(PlotConsumer, self).finalize()
-        plot_consumer_result(self.result, self.grid, self._title, '.' + sep + 'pdf')
-
-
-class PlotTimeWaveConsumer(TimeWaveConsumer):
-    def __init__(self, title='timewaves', func=None):
-        super(PlotTimeWaveConsumer, self).__init__(func)
-        self._title = title
-
-    def finalize(self):
-        super(PlotTimeWaveConsumer, self).finalize()
-        plot_timewave_result(self.result, self._title, '.' + sep + 'pdf')
-
-
-# -- ProcessUnitTests ---
+# -- DeterministicProducerTests ---
 
 class DeterministicProducerTests(unittest.TestCase):
-    def setUp(self):
-        self.plot = None
-
-    def tearDown(self):
-        if __name__ == '__main__' and DISPLAY_RESULTS and self.plot:
-            self.plot.close()
-
     def test_deterministic_producer(self):
         grid = range(100)
         num_of_paths = 5000
@@ -145,28 +120,18 @@ class DeterministicProducerTests(unittest.TestCase):
                 self.assertEqual(x, y)
 
 
+# -- ProcessUnitTests ---
+
 class BrownianMotionProducerUnitTests(unittest.TestCase):
-    def setUp(self):
-        self.plot = None
-
-    def tearDown(self):
-        if __name__ == '__main__' and DISPLAY_RESULTS:
-            if PROFILING:
-                try:  # accepted due to external call of snakeviz
-                    system('snakeviz worker-0.prof')
-                except:
-                    pass
-            if self.plot:
-                self.plot.close()
-
     def test_brownian_motion_plot(self):
         """
         Monte Carlo simulation of geometric Brownian motion with constant volatility,
         hence initial state should be reached on average
         """
         producer = WienerProcessProducer()
-        consumer = PlotConsumer('2d-Wiener')
-        self.plot = Engine(producer, consumer).run(range(0, 20), 100)
+        consumer = Consumer()
+        Engine(producer, consumer).run(range(0, 20), 100)
+        plot_consumer_result(consumer.result, consumer.grid, '2d-Wiener', '.' + sep + 'pdf')
 
     def test_brownian_motion_timwave_plot(self):
         """
@@ -174,8 +139,9 @@ class BrownianMotionProducerUnitTests(unittest.TestCase):
         hence initial state should be reached on average
         """
         producer = WienerProcessProducer()
-        consumer = PlotTimeWaveConsumer('3d-Wiener')
-        self.plot = Engine(producer, consumer).run(range(0, 100), 1000)
+        consumer = TimeWaveConsumer()
+        Engine(producer, consumer).run(range(0, 100), 1000)
+        plot_timewave_result(consumer.result, '3d-Wiener', '.' + sep + 'pdf')
 
     def test_brownian_motion_statistics(self):
         """
@@ -212,21 +178,15 @@ class BrownianMotionProducerUnitTests(unittest.TestCase):
 
 
 class GeometricBrownianMotionProducerUnitTests(unittest.TestCase):
-    def setUp(self):
-        self.plot = None
-
-    def tearDown(self):
-        if __name__ == '__main__' and DISPLAY_RESULTS and self.plot:
-            self.plot.close()
-
     def test_geometric_brownian_motion_plot(self):
         """
         Monte Carlo simulation of geometric Brownian motion with constant volatility,
         hence initial state should be reached on average
         """
         producer = GeometricBrownianMotionProducer(.05, .05)
-        consumer = PlotConsumer('2d-GBM')
-        self.plot = Engine(producer, consumer).run(range(0, 20), 100)
+        consumer = Consumer()
+        Engine(producer, consumer).run(range(0, 20), 100)
+        plot_consumer_result(consumer.result, consumer.grid, '2d-GBM', '.' + sep + 'pdf')
 
     def test_geometric_brownian_motion_timwave_plot(self):
         """
@@ -234,8 +194,9 @@ class GeometricBrownianMotionProducerUnitTests(unittest.TestCase):
         hence initial state should be reached on average
         """
         producer = GeometricBrownianMotionProducer(.01, .01)
-        consumer = PlotTimeWaveConsumer('3d-GBM')
-        self.plot = Engine(producer, consumer).run(range(0, 50), 5000)
+        consumer = TimeWaveConsumer()
+        Engine(producer, consumer).run(range(0, 50), 5000)
+        plot_timewave_result(consumer.result, '3d-GBM', '.' + sep + 'pdf')
 
     def test_geometric_brownian_motion_statistics(self):
         """
@@ -279,74 +240,9 @@ class GeometricBrownianMotionProducerUnitTests(unittest.TestCase):
             self.assertAlmostEqual(variance(g), s_variance, 0)
 
 
-# --- GaussEvolutionProducerUnitTests ---
-
-class GaussEvolutionProducerUnitTests(unittest.TestCase):
-    def setUp(self):
-        self.plot2d = None
-        self.plot3d = None
-        self.places = 0
-        self.path = 5000
-        self.grid = range(20)
-        self.process = WienerProcess(.0, .0001)
-
-    def tearDown(self):
-        if __name__ == '__main__' and DISPLAY_RESULTS:
-            if self.plot2d:
-                self.plot2d.close()
-            if self.plot3d:
-                self.plot3d.close()
-
-    def test_statistics(self):
-        producer = GaussEvolutionProducer(self.process)
-        consumer = StatisticsConsumer()
-        stats = Engine(producer, consumer).run(self.grid, self.path)
-
-        for p, s in stats:
-                self.assertAlmostEqual(self.process.mean(p), s.mean, self.places)
-                self.assertAlmostEqual(self.process.mean(p), s.median, self.places)
-                self.assertAlmostEqual(self.process.variance(p), s.variance, self.places)
-
-    def test_2d_plot(self):
-        producer = GaussEvolutionProducer(self.process)
-        consumer = PlotConsumer('2d-' + str(self.process))
-        self.plot2d = Engine(producer, consumer).run(self.grid, 500)
-
-    def test_3d_plot(self):
-        producer = GaussEvolutionProducer(self.process)
-        consumer = PlotTimeWaveConsumer('3d-' + str(self.process))
-        self.plot2d = Engine(producer, consumer).run(self.grid, 5000)
-
-
-class OrnsteinUhlenbeckProcessUnitTests(GaussEvolutionProducerUnitTests):
-
-    def setUp(self):
-        super(OrnsteinUhlenbeckProcessUnitTests, self).setUp()
-        self.places = 2
-        self.grid = range(50)
-        self.process = OrnsteinUhlenbeckProcess(.1, .02, .02, .1)
-        self.process = OrnsteinUhlenbeckProcess(.1, -.1, .05, .1)
-
-
-class GeometricBrownianMotionUnitTests(GaussEvolutionProducerUnitTests):
-
-    def setUp(self):
-        super(GeometricBrownianMotionUnitTests, self).setUp()
-        self.places = 0
-        self.grid = range(20)
-        self.process = GeometricBrownianMotion(.1, .01, 0.1)
-
-
 # --- MultiProcessUnitTests ---
 
 class MultiProducerUnitTests(unittest.TestCase):
-    def setUp(self):
-        self.plot = None
-
-    def tearDown(self):
-        if __name__ == '__main__' and DISPLAY_RESULTS and self.plot:
-            self.plot.close()
-
     def test_multi_producer(self):
         shift = 1.
         producer = MultiProducer(WienerProcessProducer(), WienerProcessProducer(shift))
@@ -359,14 +255,106 @@ class MultiProducerUnitTests(unittest.TestCase):
 
 # --- GaussEvolutionProducerUnitTests ---
 
-class MultiGaussEvolutionProducerUnitTests(unittest.TestCase):
+class GaussEvolutionProducerUnitTests(unittest.TestCase):
     def setUp(self):
-        self.plot = None
+        self.places = 0
+        self.path = 5000
+        self.grid = range(20)
+        self.process = WienerProcess(.0, .0001)
 
-    def tearDown(self):
-        if __name__ == '__main__' and DISPLAY_RESULTS and self.plot:
-            self.plot.close()
+    def test_statistics(self):
+        producer = GaussEvolutionProducer(self.process)
+        consumer = StatisticsConsumer()
+        stats = Engine(producer, consumer).run(self.grid, self.path)
 
+        for p, s in stats:
+            self.assertAlmostEqual(self.process.mean(p), s.mean, self.places)
+            self.assertAlmostEqual(self.process.mean(p), s.median, self.places)
+            self.assertAlmostEqual(self.process.variance(p), s.variance, self.places)
+
+    def test_2d_plot(self):
+        producer = GaussEvolutionProducer(self.process)
+        consumer = Consumer()
+        Engine(producer, consumer).run(self.grid, 500)
+        plot_consumer_result(consumer.result, consumer.grid, '2d-' + str(self.process), '.' + sep + 'pdf')
+
+    def test_3d_plot(self):
+        producer = GaussEvolutionProducer(self.process)
+        consumer = TimeWaveConsumer()
+        Engine(producer, consumer).run(self.grid, 5000)
+        plot_timewave_result(consumer.result, '3d-' + str(self.process), '.' + sep + 'pdf')
+
+
+class OrnsteinUhlenbeckProcessUnitTests(GaussEvolutionProducerUnitTests):
+    def setUp(self):
+        super(OrnsteinUhlenbeckProcessUnitTests, self).setUp()
+        self.places = 2
+        self.grid = range(50)
+        self.process = OrnsteinUhlenbeckProcess(.1, .02, .02, .1)
+        self.process = OrnsteinUhlenbeckProcess(.1, -.1, .05, .1)
+
+
+class GeometricBrownianMotionUnitTests(GaussEvolutionProducerUnitTests):
+    def setUp(self):
+        super(GeometricBrownianMotionUnitTests, self).setUp()
+        self.places = 0
+        self.grid = range(20)
+        self.process = GeometricBrownianMotion(.1, .01, 0.1)
+
+
+# --- MarkovChainEvolutionProducerUnitTests
+
+
+class MarkovChainEvolutionProducerUnitTests(unittest.TestCase):
+    def setUp(self):
+        self.places = 1
+        self.path = 5000
+        self.grid = range(10)
+        s, t = [0.5, 0.5, .0], [[.75, .25, .0], [.25, .5, .25], [.0, .25, .75]]
+        self.process = FiniteStateMarkovChain(transition=t, start=s)
+
+    def test_statistics(self):
+        producer = GaussEvolutionProducer(self.process)
+        consumer = StatisticsConsumer(statistics=_MultiStatistics)
+        stats = Engine(producer, consumer).run(self.grid, self.path)
+
+        for p, s in stats:
+            for pm, sm in zip(self.process.mean(p), s.mean):
+                self.assertAlmostEqual(pm, sm, self.places)
+            for pv, sv in zip(self.process.variance(p), s.variance):
+                self.assertAlmostEqual(pv, sv, self.places)
+
+    def test_random_statistics(self):
+        for d in range(2, 10, 2):
+            process = FiniteStateMarkovChain.random(d)
+            producer = GaussEvolutionProducer(process)
+            consumer = StatisticsConsumer(statistics=_MultiStatistics)
+            stats = Engine(producer, consumer).run(self.grid, self.path)
+
+            msg = str(process._transition_matrix) + '\n'
+            msg += str(process.start) + '\n'
+            for p, s in stats:
+                for pm, sm in zip(process.mean(p), s.mean):
+                    self.assertAlmostEqual(pm, sm, self.places, msg + 'mean at %d: %f vs. %f' %(p, pm, sm))
+                for pv, sv in zip(process.variance(p), s.variance):
+                    self.assertAlmostEqual(pv, sv, self.places, msg + 'variance t %d: %f vs. %f' %(p, pv, sv))
+
+    def test_2d_plot(self):
+        producer = GaussEvolutionProducer(self.process)
+        consumer = Consumer()
+        Engine(producer, consumer).run(self.grid, 500)
+        plot_consumer_result(consumer.result, consumer.grid, '2d-' + str(self.process), '.' + sep + 'pdf')
+
+    def _test_3d_plot(self):
+        producer = GaussEvolutionProducer(self.process)
+        consumer = TimeWaveConsumer()
+        Engine(producer, consumer).run(self.grid, 5000)
+        plot_timewave_result(consumer.result, '3d-' + str(self.process), '.' + sep + 'pdf')
+
+
+# --- MultiGaussEvolutionProducerUnitTests ---
+
+class MultiGaussEvolutionProducerUnitTests(unittest.TestCase):
     def test_correlation(self):
         shift = .5
         r = .8
@@ -453,19 +441,11 @@ class MultiGaussEvolutionProducerUnitTests(unittest.TestCase):
 
 
 class SabrUnitTests(unittest.TestCase):
-
     def setUp(self):
         super(SabrUnitTests, self).setUp()
         self.places = 0
         self.grid = range(20)
         self.process = SABR()
-
-    def tearDown(self):
-        if __name__ == '__main__' and DISPLAY_RESULTS:
-            if self.plot2d:
-                self.plot2d.close()
-            if self.plot3d:
-                self.plot3d.close()
 
     def test_statistics(self):
         producer = GaussEvolutionProducer(self.process)
@@ -479,13 +459,15 @@ class SabrUnitTests(unittest.TestCase):
 
     def test_2d_plot(self):
         producer = GaussEvolutionProducer(self.process)
-        consumer = PlotConsumer('2d-' + str(self.process), lambda s: s.value[0])
-        self.plot2d = Engine(producer, consumer).run(self.grid, 500)
+        consumer = Consumer(lambda s: s.value[0])
+        Engine(producer, consumer).run(self.grid, 500)
+        plot_consumer_result(consumer.result, consumer.grid, '2d-' + str(self.process), '.' + sep + 'pdf')
 
     def test_3d_plot(self):
         producer = GaussEvolutionProducer(self.process)
-        consumer = PlotTimeWaveConsumer('3d-' + str(self.process), lambda s: s.value[0])
-        self.plot2d = Engine(producer, consumer).run(self.grid, 5000)
+        consumer = TimeWaveConsumer(lambda s: s.value[0])
+        Engine(producer, consumer).run(self.grid, 5000)
+        plot_timewave_result(consumer.result, '3d-' + str(self.process), '.' + sep + 'pdf')
 
 
 # --- __main__ ---

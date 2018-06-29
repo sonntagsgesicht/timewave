@@ -11,6 +11,11 @@ EPS = 1e-7
 
 
 class FiniteStateMarkovChain(StochasticProcess):
+
+    @property
+    def transition(self):
+        return self._transition_matrix.tolist()
+
     @classmethod
     def random(cls, d=5):
         # pick random vector and matrix with positive values
@@ -56,10 +61,10 @@ class FiniteStateMarkovChain(StochasticProcess):
             + str(self.start) + '\n' + str(self._transition_matrix)
 
     def __len__(self):
-        return len(self.start)
+        return 1
 
     def _m_pow(self, t, s=0.):
-        return self._transition_matrix ** (t - s)
+        return self._transition_matrix ** int(t - s)
 
     def evolve(self, x, s, e, q):
         p = norm.cdf(q)
@@ -131,3 +136,31 @@ class FiniteStateInhomogenuousMarkovChain(FiniteStateMarkovChain):
         # use super beyond the transition grid
         return n * super(FiniteStateInhomogenuousMarkovChain, self)._m_pow(t, min(t, max(s, l)))
 
+
+class FiniteStateAffineTimeMarkovChain(FiniteStateMarkovChain):
+    @classmethod
+    def random(cls, d=5):
+        first = FiniteStateMarkovChain.random(d)
+        second = FiniteStateMarkovChain.random(d)
+
+        # build process instance
+        return cls(transition=first.transition, fix=second.start, start=first.start)
+
+    def __init__(self, transition=None, fix=None, start=None):
+        super(FiniteStateAffineTimeMarkovChain, self).__init__(transition, start)
+        self._fix = np.array(fix)
+
+        assert len(self.start) == len(self._fix), \
+            'dimension of fix and start argument must meet.\n' \
+            + str(self.start) + '\n' + str(self._fix)
+
+    def _m_pow(self, t, s=0.):
+        return self._transition_matrix ** int(t - s) + self._fix
+
+    def mean(self, t):
+        m = super(FiniteStateAffineTimeMarkovChain, self).mean(t)
+        return list((np.array(m) + self._fix*t).flat)
+
+    def variance(self, t):
+        v = super(FiniteStateAffineTimeMarkovChain, self).variance(t)
+        raise NotImplementedError
