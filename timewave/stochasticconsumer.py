@@ -13,16 +13,17 @@ class _Statistics(object):
 
     def __init__(self, data):
         sps = sorted(data)
-        p = [int(i * len(sps) * 0.01) for i in range(100)]
+        l = float(len(sps))
+        p = [int(i * l * 0.01) for i in range(100)]
         self.count = len(sps)
-        self.mean = sum(sps) / len(sps)
-        self.variance = sum([rr ** 2 for rr in sps]) / (len(sps) - 1) - self.mean ** 2
+        self.mean = sum(sps) / l
+        self.variance = 0. if len(set(sps)) == 1 else sum([rr ** 2 for rr in sps]) / (l - 1) - self.mean ** 2
         self.stdev = sqrt(self.variance)
         self.min = sps[0]
         self.max = sps[-1]
         self.median = sps[p[50]]
         self.box = [sps[0], sps[p[25]], sps[p[50]], sps[p[75]], sps[-1]]
-        self.percentile = [sps[i] for i in p]
+        self.percentile = [sps[int(i)] for i in p]
         self.sample = data
 
     def __str__(self):
@@ -32,6 +33,20 @@ class _Statistics(object):
         mv = max(map(len, values))
         res = [a.ljust(mk) + ' : ' + v.rjust(mv) for a, v in zip(keys, values)]
         return '\n'.join(res)
+
+
+class _MultiStatistics(object):
+
+    _available = 'count', 'mean', 'variance', 'stdev', 'min', 'max', 'median', 'box', 'percentile', 'sample'
+
+    def __init__(self, data):
+        self._inner = list(_Statistics(d) for d in zip(*data))
+
+    def __getattr__(self, item):
+        if item in _MultiStatistics._available and hasattr(_Statistics(range(10)), item):
+            return list(getattr(s, item) for s in self._inner)
+        else:
+            return super(_MultiStatistics, self).__getattribute__(item)
 
 
 class StatisticsConsumer(TransposedConsumer):
@@ -49,7 +64,9 @@ class StatisticsConsumer(TransposedConsumer):
         """finalize for StatisticsConsumer"""
         super(StatisticsConsumer, self).finalize()
         # run statistics on timewave slice w at grid point g
-        self.result = [(g, self.statistics(w)) for g, w in zip(self.grid, self.result)]
+        # self.result = [(g, self.statistics(w)) for g, w in zip(self.grid, self.result)]
+        # self.result = zip(self.grid, (self.statistics(w) for w in self.result))
+        self.result = zip(self.grid, map(self.statistics, self.result))
 
 
 class StochasticProcessStatisticsConsumer(StatisticsConsumer):
@@ -89,7 +106,6 @@ class StochasticProcessStatisticsConsumer(StatisticsConsumer):
 
 
 class TimeWaveConsumer(TransposedConsumer):
-
     def finalize(self):
         super(TimeWaveConsumer, self).finalize()
 
