@@ -1,4 +1,3 @@
-
 import numpy as np
 
 from scipy.stats import norm
@@ -6,12 +5,10 @@ from scipy.linalg import expm, logm
 
 from base import StochasticProcess
 
-
 EPS = 1e-7
 
 
 class FiniteStateMarkovChain(StochasticProcess):
-
     @property
     def transition(self):
         return self._transition_matrix.tolist()
@@ -99,7 +96,6 @@ class FiniteStateMarkovChain(StochasticProcess):
 
 
 class FiniteStateContinuousTimeMarkovChain(FiniteStateMarkovChain):
-
     def __init__(self, transition=None, start=None):
         super(FiniteStateContinuousTimeMarkovChain, self).__init__(transition, start)
         self._transition_generator = logm(self._transition_matrix)
@@ -148,19 +144,23 @@ class FiniteStateAffineTimeMarkovChain(FiniteStateMarkovChain):
 
     def __init__(self, transition=None, fix=None, start=None):
         super(FiniteStateAffineTimeMarkovChain, self).__init__(transition, start)
-        self._fix = np.array(fix)
+        self._fix = np.zeros((len(self.start),), float) if fix is None else np.array(fix)
 
         assert len(self.start) == len(self._fix), \
             'dimension of fix and start argument must meet.\n' \
             + str(self.start) + '\n' + str(self._fix)
 
-    def _m_pow(self, t, s=0.):
-        return self._transition_matrix ** int(t - s) + self._fix
+    def evolve(self, x, s, e, q):
+        for t in range(s, e):
+            x = super(FiniteStateAffineTimeMarkovChain, self).evolve(x, t, t + 1, q)
+            x = list((np.asarray(x, float) + self._fix).flat)
+        return x
 
     def mean(self, t):
-        m = super(FiniteStateAffineTimeMarkovChain, self).mean(t)
-        return list((np.array(m) + self._fix*t).flat)
+        x = np.array(self.start, float)
+        for _ in range(t):
+            x = x * self._transition_matrix + self._fix
+        return list(x.flat)
 
     def variance(self, t):
-        v = super(FiniteStateAffineTimeMarkovChain, self).variance(t)
         raise NotImplementedError
