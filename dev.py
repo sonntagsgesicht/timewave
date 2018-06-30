@@ -36,8 +36,9 @@ s, t = (0.5, 0.5, .0), ((.75, .25, .0), (.25, .5, .25), (.0, .25, .75))
 f = (.0, .1, .1)
 
 # process = FiniteStateMarkovChain(transition=t, start=s)
-process = FiniteStateMarkovChain.random(5)
+# process = FiniteStateMarkovChain.random(5)
 # process = FiniteStateAffineTimeMarkovChain(transition=t, fix=f, start=s)
+process = FiniteStateAffineTimeMarkovChain.random(5)
 
 producer = GaussEvolutionProducer(process)
 consumer = StatisticsConsumer(statistics=_MultiStatistics)

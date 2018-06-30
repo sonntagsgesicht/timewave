@@ -1,3 +1,6 @@
+from math import sqrt
+from random import Random
+
 import numpy as np
 
 from scipy.stats import norm
@@ -13,6 +16,10 @@ class FiniteStateMarkovChain(StochasticProcess):
     def transition(self):
         return self._transition_matrix.tolist()
 
+    @property
+    def r_squared(self):
+        return self._r_squared
+
     @classmethod
     def random(cls, d=5):
         # pick random vector and matrix with positive values
@@ -26,12 +33,14 @@ class FiniteStateMarkovChain(StochasticProcess):
         # build process instance
         return cls(transition=t.tolist(), start=list(s.flat))
 
-    def __init__(self, transition=None, start=None):
+    def __init__(self, transition=None, r_squared=1., start=None):
         """
 
         :param list transition: stochastic matrix of transition probabilities,
                                 i.e. np.ndarray with shape=2 and sum of each line equal to 1
                                 (optional) default: identity matrix
+        :param float r_squared: square of systematic correlation in factor simulation
+                                (optional) default: 1.
         :param list start: initial state distribution, i.e. np.ndarray with shape=1 or list, adding up to 1,
                            (optional) default: unique distribution
         """
@@ -46,6 +55,8 @@ class FiniteStateMarkovChain(StochasticProcess):
         transition = np.identity(dim) if transition is None else transition
         self._transition_matrix = np.matrix(transition, float)
 
+        self._r_squared = r_squared
+        self._idiosyncratic_random = Random()
         super(FiniteStateMarkovChain, self).__init__(start)
 
         # validate argument shapes in shapes and sum for being stochastic
@@ -64,6 +75,7 @@ class FiniteStateMarkovChain(StochasticProcess):
         return self._transition_matrix ** int(t - s)
 
     def evolve(self, x, s, e, q):
+        q = sqrt(self._r_squared) * q + sqrt(1.-self._r_squared) * self._idiosyncratic_random.gauss(0., 1.)
         p = norm.cdf(q)
         m = self._m_pow(e, s)
         mm = np.greater(m.cumsum(1), p) * 1.
@@ -96,8 +108,8 @@ class FiniteStateMarkovChain(StochasticProcess):
 
 
 class FiniteStateContinuousTimeMarkovChain(FiniteStateMarkovChain):
-    def __init__(self, transition=None, start=None):
-        super(FiniteStateContinuousTimeMarkovChain, self).__init__(transition, start)
+    def __init__(self, transition=None, r_squared=1., start=None):
+        super(FiniteStateContinuousTimeMarkovChain, self).__init__(transition, r_squared, start)
         self._transition_generator = logm(self._transition_matrix)
 
     def _m_pow(self, t, s=0.):
@@ -119,8 +131,8 @@ class FiniteStateInhomogenuousMarkovChain(FiniteStateMarkovChain):
         # build process instance
         return cls(transition=g, start=list(s.flat))
 
-    def __init__(self, transition=[None], start=None):
-        super(FiniteStateInhomogenuousMarkovChain, self).__init__(transition.pop(-1), start)
+    def __init__(self, transition=[None], r_squared=1., start=None):
+        super(FiniteStateInhomogenuousMarkovChain, self).__init__(transition.pop(-1), r_squared, start)
         self._transition_grid = transition
 
     def _m_pow(self, t, s=0.):
@@ -142,8 +154,8 @@ class FiniteStateAffineTimeMarkovChain(FiniteStateMarkovChain):
         # build process instance
         return cls(transition=first.transition, fix=second.start, start=first.start)
 
-    def __init__(self, transition=None, fix=None, start=None):
-        super(FiniteStateAffineTimeMarkovChain, self).__init__(transition, start)
+    def __init__(self, transition=None, r_squared=1., fix=None, start=None):
+        super(FiniteStateAffineTimeMarkovChain, self).__init__(transition, r_squared, start)
         self._fix = np.zeros((len(self.start),), float) if fix is None else np.array(fix)
 
         assert len(self.start) == len(self._fix), \
