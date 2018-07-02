@@ -45,18 +45,20 @@ class StochasticProcess(object):
     def mean(self, t):
         """ expected value of time :math:`t` increment
 
-        :param t:
-        :rtype float
-        :return:
+        :param float t:
+        :rtype: float
+        :return: expected value of time :math:`t` increment
+
         """
         return 0.0
 
     def variance(self, t):
         """ second central moment of time :math:`t` increment
 
-        :param t:
-        :rtype float
-        :return:
+        :param float t:
+        :rtype: float
+        :return: variance, i.e. second central moment of time :math:`t` increment
+
         """
         return 0.0
 

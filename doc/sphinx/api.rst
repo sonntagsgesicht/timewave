@@ -54,14 +54,6 @@ Timewave Consumer
 .. automodule:: consumers
 
 
-Stochastic Process
-==================
-
-.. inheritance-diagram:: stochasticprocess
-
-.. automodule:: stochasticprocess
-
-
 Stochastic Process Simulation
 =============================
 
@@ -73,3 +65,21 @@ Stochastic Process Simulation
 
 .. automodule:: stochasticconsumer
 
+
+Stochastic Process
+==================
+
+.. autosummary::
+    :nosignatures:
+
+    stochasticprocess.base.StochasticProcess
+    stochasticprocess.base.MultivariateStochasticProcess
+
+
+.. inheritance-diagram:: stochasticprocess.gauss
+.. inheritance-diagram:: stochasticprocess.markovchain
+
+.. automodule:: stochasticprocess.base
+.. automodule:: stochasticprocess.gauss
+.. automodule:: stochasticprocess.markovchain
+.. automodule:: stochasticprocess.multifactor
