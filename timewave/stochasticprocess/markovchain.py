@@ -31,7 +31,7 @@ class FiniteStateMarkovChain(StochasticProcess):
         t = t / t.sum(1).reshape((d, 1))
 
         # build process instance
-        return cls(transition=t.tolist(), start=list(s.flat))
+        return cls(transition=t.tolist(), r_squared=1., start=list(s.flat))
 
     def __init__(self, transition=None, r_squared=1., start=None):
         """
@@ -43,6 +43,7 @@ class FiniteStateMarkovChain(StochasticProcess):
                                 (optional) default: 1.
         :param list start: initial state distribution, i.e. np.ndarray with shape=1 or list, adding up to 1,
                            (optional) default: unique distribution
+
         """
 
         # if any argument is missing use defaults
@@ -83,28 +84,36 @@ class FiniteStateMarkovChain(StochasticProcess):
         return list(np.asarray(x, float).dot(mm).flat)
 
     def mean(self, t):
+        return self._underlying_mean(t)
+
+    def variance(self, t):
+        return list(np.diag(self._underlying_covariance(t)).flat)
+
+    def _underlying_mean(self, t):
         s = np.asarray(self.start, float)
         m = self._m_pow(t)
         return list(s.dot(m).flat)
 
-    def variance(self, t):
-        def e_xx(prop, cum_prop):
+    def _underlying_covariance(self, t):
+        def _e_xy(prop_x, cum_prop_x, prop_y, cum_prop_y):
             b = list()
-            for p, c in zip(prop, cum_prop):
-                b.append([max(0., min(c, d) - max(c - p, d - q)) for q, d in zip(prop, cum_prop)])
+            for p, c in zip(prop_x, cum_prop_x):
+                b.append([max(0., min(c, d) - max(c - p, d - q)) for q, d in zip(prop_y, cum_prop_y)])
             return np.matrix(b)
 
         s = np.asarray(self.start, float)
         m = self._m_pow(t)
-        v = list()
-        for prop, cum_prop, mean in zip(m.T, m.cumsum(1).T, self.mean(t)):
-            exx_m = e_xx(list(prop.flat), list(cum_prop.flat))
-            exx = s.dot(exx_m).dot(s.T)[0, 0]
-            varx = exx - mean ** 2
-            varx = max(0., varx) if varx > -EPS else varx  # avoid numerical negatives
-            v.append(varx)
-        assert min(v) >= 0., 'Got negative variance: ' + str(v)
-        return v
+        c = list()
+        for prop_x, cum_prop_x, mean_x in zip(m.T, m.cumsum(1).T, self._underlying_mean(t)):
+            r = list()
+            for prop_y, cum_prop_y, mean_y in zip(m.T, m.cumsum(1).T, self._underlying_mean(t)):
+                exy_m = _e_xy(list(prop_x.flat), list(cum_prop_x.flat), list(prop_y.flat), list(cum_prop_y.flat))
+                exx = s.dot(exy_m).dot(s.T)[0, 0]
+                cov_xy = exx - mean_x * mean_y
+                cov_xy = max(0., cov_xy) if cov_xy > -EPS else cov_xy  # avoid numerical negatives
+                r.append(cov_xy)
+            c.append(r)
+        return c
 
 
 class FiniteStateContinuousTimeMarkovChain(FiniteStateMarkovChain):
@@ -116,7 +125,7 @@ class FiniteStateContinuousTimeMarkovChain(FiniteStateMarkovChain):
         return expm(self._transition_generator * (t - s))
 
 
-class FiniteStateInhomogenuousMarkovChain(FiniteStateMarkovChain):
+class FiniteStateInhomogeneousMarkovChain(FiniteStateMarkovChain):
     @classmethod
     def random(cls, d=5, l=3):
         s = np.random.random((1, d))  # pick random vector or matrix with positive values
@@ -132,7 +141,7 @@ class FiniteStateInhomogenuousMarkovChain(FiniteStateMarkovChain):
         return cls(transition=g, start=list(s.flat))
 
     def __init__(self, transition=[None], r_squared=1., start=None):
-        super(FiniteStateInhomogenuousMarkovChain, self).__init__(transition.pop(-1), r_squared, start)
+        super(FiniteStateInhomogeneousMarkovChain, self).__init__(transition.pop(-1), r_squared, start)
         self._transition_grid = transition
 
     def _m_pow(self, t, s=0.):
@@ -142,10 +151,10 @@ class FiniteStateInhomogenuousMarkovChain(FiniteStateMarkovChain):
         for i in range(min(s, l), min(t, l)):
             n *= self._transition_grid[i]
         # use super beyond the transition grid
-        return n * super(FiniteStateInhomogenuousMarkovChain, self)._m_pow(t, min(t, max(s, l)))
+        return n * super(FiniteStateInhomogeneousMarkovChain, self)._m_pow(t, min(t, max(s, l)))
 
 
-class FiniteStateAffineTimeMarkovChain(FiniteStateMarkovChain):
+class FiniteStateAffineMarkovChain(FiniteStateMarkovChain):
     @classmethod
     def random(cls, d=5):
         first = FiniteStateMarkovChain.random(d)
@@ -155,7 +164,7 @@ class FiniteStateAffineTimeMarkovChain(FiniteStateMarkovChain):
         return cls(transition=first.transition, fix=second.start, start=first.start)
 
     def __init__(self, transition=None, r_squared=1., fix=None, start=None):
-        super(FiniteStateAffineTimeMarkovChain, self).__init__(transition, r_squared, start)
+        super(FiniteStateAffineMarkovChain, self).__init__(transition, r_squared, start)
         self._fix = np.zeros((len(self.start),), float) if fix is None else np.array(fix)
 
         assert len(self.start) == len(self._fix), \
@@ -164,7 +173,7 @@ class FiniteStateAffineTimeMarkovChain(FiniteStateMarkovChain):
 
     def evolve(self, x, s, e, q):
         for t in range(s, e):
-            x = super(FiniteStateAffineTimeMarkovChain, self).evolve(x, t, t + 1, q)
+            x = super(FiniteStateAffineMarkovChain, self).evolve(x, t, t + 1, q)
             x = list((np.asarray(x, float) + self._fix).flat)
         return x
 
@@ -176,3 +185,68 @@ class FiniteStateAffineTimeMarkovChain(FiniteStateMarkovChain):
 
     def variance(self, t):
         raise NotImplementedError
+
+
+class FiniteStateAugmentedMarkovChain(FiniteStateMarkovChain):
+
+    @property
+    def func(self):
+        return self._weights
+
+    @classmethod
+    def random(cls, d=5, weights=None):
+        f = FiniteStateMarkovChain.random(d)
+        return cls(f.transition, f.r_squared, weights, f.start)
+
+    def __init__(self, transition=None, r_squared=1., weights=None, start=None):
+        """
+
+        :param list transition: stochastic matrix of transition probabilities,
+                                i.e. np.ndarray with shape=2 and sum of each line equal to 1
+                                (optional) default: identity matrix
+        :param float r_squared: square of systematic correlation in factor simulation
+                                (optional) default: 1.
+        :param callable weights: function :math:`f:S \rightarrow \mathbb{R}`
+                              defined on single states to weight augmentation (aggregate) of state distributions
+                              (optional) default: :math:`f=id`
+        :param list start: initial state distribution, i.e. np.ndarray with shape=1 or list, adding up to 1,
+                           (optional) default: unique distribution
+
+        """
+        super(FiniteStateAugmentedMarkovChain, self).__init__(transition, r_squared, start)
+        self._weights = (lambda x: 1.) if weights is None else weights
+        self._underlying = FiniteStateMarkovChain(transition, r_squared, start)
+
+    def eval(self, s):
+        s = s.value if hasattr(s, 'value') else s
+        return sum(x * self._weights(i) for i, x in enumerate(s))
+
+    def mean(self, t):
+        return self.eval(self._underlying_mean(t))
+
+    def variance(self, t):
+        w = np.array([self._weights(i) for i in range(len(self.start))], float)
+        c = np.matrix(self._underlying_covariance(t), float)
+        return w.dot(c).dot(w.T)[0, 0]
+
+
+class FiniteStateCreditMarkovChain(FiniteStateAugmentedMarkovChain):
+
+    @classmethod
+    def random(cls, d=5):
+        transition = np.zeros((d,d), float)
+        ms = np.exp(np.linspace(0., 1., d, dtype=float))
+        t = np.random.random((d-1, d-1))
+        t = t / t.sum(1).reshape((d-1, 1))
+
+        r_squared = 1.
+
+        weights = (lambda x: 1. if x == (d-1) else 0.)
+
+        start = np.ones((d , 1), float)
+        start[-1,1] = 0.
+        start = start / start.sum(1)
+
+        return cls(transition, r_squared, weights, start)
+
+

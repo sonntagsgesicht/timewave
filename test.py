@@ -21,7 +21,7 @@ from timewave.producers import MultiProducer, DeterministicProducer, StringReade
 from timewave.consumers import TransposedConsumer, ConsumerConsumer, MultiConsumer, StringWriterConsumer
 from timewave.stochasticprocess.gauss import WienerProcess, OrnsteinUhlenbeckProcess, GeometricBrownianMotion
 from timewave.stochasticprocess.multifactor import SABR, MultiGauss
-from timewave.stochasticprocess.markovchain import FiniteStateMarkovChain, FiniteStateInhomogenuousMarkovChain, \
+from timewave.stochasticprocess.markovchain import FiniteStateMarkovChain, FiniteStateInhomogeneousMarkovChain, \
     FiniteStateContinuousTimeMarkovChain
 from timewave.stochasticproducer import GaussEvolutionProducer, MultiGaussEvolutionProducer
 from timewave.stochasticconsumer import StatisticsConsumer, StochasticProcessStatisticsConsumer, TimeWaveConsumer, \
