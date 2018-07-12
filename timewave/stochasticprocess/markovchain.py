@@ -72,6 +72,9 @@ class FiniteStateMarkovChain(StochasticProcess):
     def __len__(self):
         return 1
 
+    def __str__(self):
+        return self.__class__.__name__ + '(dim=%d)' % len(self.start)
+
     def _m_pow(self, t, s=0.):
         return self._transition_matrix ** int(t - s)
 
@@ -142,14 +145,15 @@ class FiniteStateInhomogeneousMarkovChain(FiniteStateMarkovChain):
 
     def __init__(self, transition=[None], r_squared=1., start=None):
         super(FiniteStateInhomogeneousMarkovChain, self).__init__(transition.pop(-1), r_squared, start)
-        self._transition_grid = transition
+        self._transition_grid = list(np.matrix(t, float) for t in transition)
+        self._identity = np.identity(len(self.start), float)
 
-    def _m_pow(self, t, s=0.):
+    def _m_pow(self, t, s=0):
         l = len(self._transition_grid)
         # use transition grid at start
-        n = np.identity(len(self), float)
+        n = self._identity
         for i in range(min(s, l), min(t, l)):
-            n *= self._transition_grid[i]
+            n = n.dot(self._transition_grid[i])
         # use super beyond the transition grid
         return n * super(FiniteStateInhomogeneousMarkovChain, self)._m_pow(t, min(t, max(s, l)))
 
