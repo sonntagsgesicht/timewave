@@ -158,39 +158,6 @@ class FiniteStateInhomogeneousMarkovChain(FiniteStateMarkovChain):
         return n * super(FiniteStateInhomogeneousMarkovChain, self)._m_pow(t, min(t, max(s, l)))
 
 
-class FiniteStateAffineMarkovChain(FiniteStateMarkovChain):
-    @classmethod
-    def random(cls, d=5):
-        first = FiniteStateMarkovChain.random(d)
-        second = FiniteStateMarkovChain.random(d)
-
-        # build process instance
-        return cls(transition=first.transition, fix=second.start, start=first.start)
-
-    def __init__(self, transition=None, r_squared=1., fix=None, start=None):
-        super(FiniteStateAffineMarkovChain, self).__init__(transition, r_squared, start)
-        self._fix = np.zeros((len(self.start),), float) if fix is None else np.array(fix)
-
-        assert len(self.start) == len(self._fix), \
-            'dimension of fix and start argument must meet.\n' \
-            + str(self.start) + '\n' + str(self._fix)
-
-    def evolve(self, x, s, e, q):
-        for t in range(s, e):
-            x = super(FiniteStateAffineMarkovChain, self).evolve(x, t, t + 1, q)
-            x = list((np.asarray(x, float) + self._fix).flat)
-        return x
-
-    def mean(self, t):
-        x = np.array(self.start, float)
-        for _ in range(t):
-            x = x * self._transition_matrix + self._fix
-        return list(x.flat)
-
-    def variance(self, t):
-        raise NotImplementedError
-
-
 class FiniteStateAugmentedMarkovChain(FiniteStateMarkovChain):
 
     @property
@@ -232,25 +199,3 @@ class FiniteStateAugmentedMarkovChain(FiniteStateMarkovChain):
         w = np.array([self._weights(i) for i in range(len(self.start))], float)
         c = np.matrix(self._underlying_covariance(t), float)
         return w.dot(c).dot(w.T)[0, 0]
-
-
-class FiniteStateCreditMarkovChain(FiniteStateAugmentedMarkovChain):
-
-    @classmethod
-    def random(cls, d=5):
-        transition = np.zeros((d,d), float)
-        ms = np.exp(np.linspace(0., 1., d, dtype=float))
-        t = np.random.random((d-1, d-1))
-        t = t / t.sum(1).reshape((d-1, 1))
-
-        r_squared = 1.
-
-        weights = (lambda x: 1. if x == (d-1) else 0.)
-
-        start = np.ones((d , 1), float)
-        start[-1,1] = 0.
-        start = start / start.sum(1)
-
-        return cls(transition, r_squared, weights, start)
-
-
