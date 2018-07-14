@@ -1,6 +1,6 @@
 # coding=utf-8
 """
-UnitTests for eval simulation engine
+UnitTests for timewave simulation engine
 """
 from datetime import datetime
 import unittest
@@ -14,7 +14,7 @@ try:
     from mpl_toolkits.mplot3d import axes3d
     from matplotlib import cm
 except ImportError:
-    print('eval graphics not available due to ImportError importing matplotlib.pyplot')
+    print('timewave graphics not available due to ImportError importing matplotlib.pyplot')
 
 from timewave.engine import Engine, Producer, Consumer
 from timewave.producers import MultiProducer, DeterministicProducer, StringReaderProducer

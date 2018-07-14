@@ -18,8 +18,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../eval'))
-sys.path.insert(0, os.path.abspath('../../eval'))
+sys.path.insert(0, os.path.abspath('../timewave'))
+sys.path.insert(0, os.path.abspath('../../timewave'))
 sys.path.insert(0, os.path.abspath('..'))
 
 source_parsers = {'.md': 'recommonmark.parser.CommonMarkParser',}
@@ -75,7 +75,7 @@ author = 'pbrisk_at_github@icloud.com'
 # built documents.
 #
 # The short X.Y version.
-version = u'0.3'
+version = u'0.5'
 # The full version, including alpha/beta/rc tags.
 release = u'alpha'
 
@@ -150,7 +150,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'eval.tex', 'Timewave Documentation',
+    (master_doc, 'timewave.tex', 'Timewave Documentation',
      'Deutsche Postbank AG', 'manual'),
 ]
 
@@ -160,7 +160,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'eval', 'Timewave Documentation',
+    (master_doc, 'timewave', 'Timewave Documentation',
      [author], 1)
 ]
 
@@ -171,7 +171,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'eval', 'Timewave Documentation',
+    (master_doc, 'timewave', 'Timewave Documentation',
      author, 'Timewave', 'One line description of project.',
      'Miscellaneous'),
 ]

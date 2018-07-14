@@ -170,7 +170,7 @@ class FiniteStateAugmentedMarkovChain(FiniteStateMarkovChain):
         return cls(f.transition, f.r_squared, weights, f.start)
 
     def __init__(self, transition=None, r_squared=1., weights=None, start=None):
-        """
+        r"""
 
         :param list transition: stochastic matrix of transition probabilities,
                                 i.e. np.ndarray with shape=2 and sum of each line equal to 1
@@ -178,8 +178,8 @@ class FiniteStateAugmentedMarkovChain(FiniteStateMarkovChain):
         :param float r_squared: square of systematic correlation in factor simulation
                                 (optional) default: 1.
         :param callable weights: function :math:`f:S \rightarrow \mathbb{R}`
-                              defined on single states to weight augmentation (aggregate) of state distributions
-                              (optional) default: :math:`f=id`
+                                 defined on single states to weight augmentation (aggregate) of state distributions
+                                 (optional) default: :math:`f=id`
         :param list start: initial state distribution, i.e. np.ndarray with shape=1 or list, adding up to 1,
                            (optional) default: unique distribution
 

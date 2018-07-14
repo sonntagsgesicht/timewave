@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-#  eval
+#  timewave
 #  ------------
-#  eval, a classical time evolution simulation engine in python.
+#  timewave, a classical time evolution simulation engine in python.
 #
 #  Author:  pbrisk <pbrisk_at_github@icloud.com>
 #  Copyright: 2016, 2017 Deutsche Postbank AG
@@ -18,15 +18,15 @@ except ImportError:
 
 
 setup(
-    name='eval',
-    description='eval, a stochastic process evolution simulation engine in python.',
+    name='timewave',
+    description='timewave, a stochastic process evolution simulation engine in python.',
     version='0.5',
     author='Deutsche Postbank AG [pbrisk]',
     author_email='pbrisk_at_github@icloud.com',
-    url='https://github.com/pbrisk/eval',
-    bugtrack_url='https://github.com/pbrisk/eval/issues',
+    url='https://github.com/pbrisk/timewave',
+    bugtrack_url='https://github.com/pbrisk/timewave/issues',
     license='Apache License 2.0',
-    packages=['eval'],
+    packages=['timewave'],
     install_requires=['dill','numpy','scipy','matplotlib'],
     long_description=codecs.open('README.rst', encoding='utf-8').read(),
     platforms='any',
@@ -49,5 +49,5 @@ setup(
         'Topic :: Office/Business :: Scheduling',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Software Development :: Localization',
-    ], requires=['numpy', 'scipy']
+    ]
 )

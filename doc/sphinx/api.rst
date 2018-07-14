@@ -66,8 +66,8 @@ Stochastic Process Simulation
 .. automodule:: stochasticconsumer
 
 
-Stochastic Process
-==================
+Stochastic Process Definition
+=============================
 
 .. autosummary::
     :nosignatures:
