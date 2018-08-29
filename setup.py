@@ -24,7 +24,6 @@ setup(
     author='Deutsche Postbank AG [pbrisk]',
     author_email='pbrisk_at_github@icloud.com',
     url='https://github.com/pbrisk/timewave',
-    bugtrack_url='https://github.com/pbrisk/timewave/issues',
     license='Apache License 2.0',
     packages=['timewave', 'timewave/stochasticprocess'],
     install_requires=['dill','numpy','scipy','matplotlib'],
