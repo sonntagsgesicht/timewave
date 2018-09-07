@@ -90,7 +90,10 @@ if True:
     underlying = FiniteStateMarkovChain(transition, r_squared, start)
     process = AugmentedFiniteStateMarkovChain(underlying, augmentation)
     print process
-
+    process.start = [1., 1., 1., 0.]
+    print process.start
+    print underlying.start
+    
     producer = GaussEvolutionProducer(process)
     consumer = StatisticsConsumer(func=process.eval)
     stats = Engine(producer, consumer).run(grid, path)

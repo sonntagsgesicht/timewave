@@ -140,7 +140,8 @@ class FiniteStateInhomogeneousMarkovChain(FiniteStateMarkovChain):
         # build process instance
         return cls(transition=g, start=list(s.flat))
 
-    def __init__(self, transition=[None], r_squared=1., start=None):
+    def __init__(self, transition=None, r_squared=1., start=None):
+        transition = [transition] if not isinstance(transition, (tuple, list)) else transition
         super(FiniteStateInhomogeneousMarkovChain, self).__init__(transition.pop(-1), r_squared, start)
         self._transition_grid = list(np.matrix(t, float) for t in transition)
         self._identity = np.identity(len(self.start), float)
@@ -166,6 +167,14 @@ class AugmentedFiniteStateMarkovChain(StochasticProcess):
     def diffusion_driver(self):
         return self._underlying.diffusion_driver
 
+    @property
+    def start(self):
+        return self._underlying.start
+
+    @start.setter
+    def start(self, value):
+        self._underlying.start = value
+
     def __init__(self, underlying, augmentation=None):
         r"""
 
@@ -177,10 +186,10 @@ class AugmentedFiniteStateMarkovChain(StochasticProcess):
                                       In this case :code:`__getitem__` is called.
 
         """
-        super(AugmentedFiniteStateMarkovChain, self).__init__(underlying.start)
+        self._underlying = underlying
+        super(AugmentedFiniteStateMarkovChain, self).__init__(self._underlying.start)
         augmentation = augmentation.__getitem__ if isinstance(augmentation, (list, tuple)) else augmentation
         self._augmentation = (lambda x: 1.) if augmentation is None else augmentation
-        self._underlying = underlying
 
     def __len__(self):
         return len(self._underlying)

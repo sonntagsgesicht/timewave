@@ -407,6 +407,8 @@ class InhomogeneousMarkovChainEvolutionProducerUnitTests(MarkovChainEvolutionPro
 
 
 class AugmentedMarkovChainEvolutionProducerUnitTests(GaussEvolutionProducerUnitTests):
+    _underlying_class = FiniteStateMarkovChain
+
     def setUp(self):
         super(AugmentedMarkovChainEvolutionProducerUnitTests, self).setUp()
         self.places = 1
@@ -419,11 +421,28 @@ class AugmentedMarkovChainEvolutionProducerUnitTests(GaussEvolutionProducerUnitT
             [0.0, 0.0, 0.0, 1.0]]
         r_squared = 1.0
         start = [.3, .2, .5, 0.]
-        underlying = FiniteStateMarkovChain(transition, r_squared, start)
+        self.underlying = self._underlying_class(transition, r_squared, start)
         augmentation = (lambda x: 1. if x == 3 else 0.)
         augmentation = [0., 0., 0., 1.]
-        self.process = AugmentedFiniteStateMarkovChain(underlying, augmentation)
+        self.process = AugmentedFiniteStateMarkovChain(self.underlying, augmentation)
         self.eval = self.process.eval
+
+    def test_start(self):
+        self.assertEqual(self.process.start, self.underlying.start)
+
+        start = [1., 1., 1., 1.]
+        self.process.start = start
+        self.assertEqual(self.process.start, self.underlying.start)
+        self.assertEqual(start, self.underlying.start)
+
+        start = [2., 2., 2., 2.]
+        self.underlying.start = start
+        self.assertEqual(self.process.start, self.underlying.start)
+        self.assertEqual(start, self.underlying.start)
+
+
+class ContinuousAugmentedMarkovChainEvolutionProducerUnitTests(AugmentedMarkovChainEvolutionProducerUnitTests):
+    _underlying_class = FiniteStateContinuousTimeMarkovChain
 
 
 # --- MultiGaussEvolutionProducerUnitTests ---
