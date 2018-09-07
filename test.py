@@ -22,7 +22,7 @@ from timewave.consumers import TransposedConsumer, ConsumerConsumer, MultiConsum
 from timewave.stochasticprocess.gauss import WienerProcess, OrnsteinUhlenbeckProcess, GeometricBrownianMotion
 from timewave.stochasticprocess.multifactor import SABR, MultiGauss
 from timewave.stochasticprocess.markovchain import FiniteStateMarkovChain, FiniteStateInhomogeneousMarkovChain, \
-    FiniteStateContinuousTimeMarkovChain, FiniteStateAugmentedMarkovChain
+    FiniteStateContinuousTimeMarkovChain, AugmentedFiniteStateMarkovChain
 from timewave.stochasticproducer import GaussEvolutionProducer, MultiGaussEvolutionProducer
 from timewave.stochasticconsumer import StatisticsConsumer, StochasticProcessStatisticsConsumer, TimeWaveConsumer, \
     _MultiStatistics, _Statistics
@@ -412,7 +412,6 @@ class AugmentedMarkovChainEvolutionProducerUnitTests(GaussEvolutionProducerUnitT
         self.places = 1
         self.path = 5000
         self.grid = range(10)
-        weights = (lambda x: 1. if x == 3 else 0.)
         transition = [
             [0.7, 0.2, 0.099, 0.001],
             [0.2, 0.5, 0.29, 0.01],
@@ -420,7 +419,10 @@ class AugmentedMarkovChainEvolutionProducerUnitTests(GaussEvolutionProducerUnitT
             [0.0, 0.0, 0.0, 1.0]]
         r_squared = 1.0
         start = [.3, .2, .5, 0.]
-        self.process = FiniteStateAugmentedMarkovChain(transition, r_squared, weights, start)
+        underlying = FiniteStateMarkovChain(transition, r_squared, start)
+        augmentation = (lambda x: 1. if x == 3 else 0.)
+        augmentation = [0., 0., 0., 1.]
+        self.process = AugmentedFiniteStateMarkovChain(underlying, augmentation)
         self.eval = self.process.eval
 
 
