@@ -19,7 +19,8 @@ except ImportError:
 from timewave.engine import Engine, Producer, Consumer
 from timewave.producers import MultiProducer, DeterministicProducer, StringReaderProducer
 from timewave.consumers import TransposedConsumer, ConsumerConsumer, MultiConsumer, StringWriterConsumer
-from timewave.stochasticprocess.gauss import WienerProcess, OrnsteinUhlenbeckProcess, GeometricBrownianMotion
+from timewave.stochasticprocess.gauss import WienerProcess, OrnsteinUhlenbeckProcess, GeometricBrownianMotion, \
+    TimeDependentWienerProcess, TimeDependentGeometricBrownianMotion
 from timewave.stochasticprocess.multifactor import SABR, MultiGauss
 from timewave.stochasticprocess.markovchain import FiniteStateMarkovChain, FiniteStateInhomogeneousMarkovChain, \
     FiniteStateContinuousTimeMarkovChain, AugmentedFiniteStateMarkovChain
@@ -301,6 +302,57 @@ class GeometricBrownianMotionUnitTests(GaussEvolutionProducerUnitTests):
         self.places = 0
         self.grid = range(20)
         self.process = GeometricBrownianMotion(.1, .01, 0.1)
+
+
+class TermWienerProcessUnitTests(GaussEvolutionProducerUnitTests):
+    def setUp(self):
+        super(TermWienerProcessUnitTests, self).setUp()
+        self.places = 0
+        self.grid = range(20)
+        self.process = TimeDependentWienerProcess([0., 0.5, -0.5, 0.], [1., .5, 0.5, 0.3], [0., 3., 5., 7.])
+
+    def test_compare(self):
+
+        process = WienerProcess()
+        for g in self.grid:
+            self.assertAlmostEqual(process.mean(g), process._mu * g)
+            self.assertAlmostEqual(process.variance(g), process._sigma ** 2 * g)
+
+        term_process = TimeDependentWienerProcess()
+        for g in self.grid:
+            self.assertAlmostEqual(process.mean(g), term_process.mean(g))
+            self.assertAlmostEqual(process.variance(g), term_process.variance(g))
+
+        term_process = TimeDependentWienerProcess([0.] * 5, [1.] * 5)
+        for g in self.grid:
+            self.assertAlmostEqual(process.mean(g), term_process.mean(g))
+            self.assertAlmostEqual(process.variance(g), term_process.variance(g))
+
+
+class TimeDependentGeometricBrownianMotionUnitTests(TermWienerProcessUnitTests):
+    def setUp(self):
+        super(TimeDependentGeometricBrownianMotionUnitTests, self).setUp()
+        self.path = 5000
+        self.places = 0
+        self.grid = range(20)
+        self.process = TimeDependentGeometricBrownianMotion([0., 0.05, -0.05, 0.], [0.1, .005, 0.2, 0.12],
+                                                            [0., 3., 5., 7.])
+
+    def test_compare(self):
+        process = GeometricBrownianMotion(mu=0.01, sigma=0.01)
+        for g in self.grid:
+            self.assertAlmostEqual(process.mean(g), exp(process._mu * g))
+            self.assertAlmostEqual(process.variance(g), process.mean(g) ** 2 * (exp(process._sigma ** 2 * g) - 1))
+
+        term_process = TimeDependentGeometricBrownianMotion(mu=(0.01,), sigma=(0.01,))
+        for g in self.grid:
+            self.assertAlmostEqual(process.mean(g), term_process.mean(g))
+            self.assertAlmostEqual(process.variance(g), term_process.variance(g))
+
+        term_process = TimeDependentGeometricBrownianMotion([0.01] * 5, [0.01] * 5)
+        for g in self.grid:
+            self.assertAlmostEqual(process.mean(g), term_process.mean(g))
+            self.assertAlmostEqual(process.variance(g), term_process.variance(g))
 
 
 # --- MarkovChainEvolutionProducerUnitTests

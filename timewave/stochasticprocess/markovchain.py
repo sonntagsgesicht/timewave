@@ -119,7 +119,7 @@ class FiniteStateMarkovChain(StochasticProcess):
 class FiniteStateContinuousTimeMarkovChain(FiniteStateMarkovChain):
     def __init__(self, transition=None, r_squared=1., start=None):
         super(FiniteStateContinuousTimeMarkovChain, self).__init__(transition, r_squared, start)
-        self._transition_generator = logm(self._transition_matrix)
+        self._transition_generator = logm(self._transition_matrix)  # todo: handle complex solution
 
     def _m_pow(self, t, s=0.):
         return expm(self._transition_generator * (t - s))

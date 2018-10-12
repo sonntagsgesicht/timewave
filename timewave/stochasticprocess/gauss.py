@@ -1,13 +1,10 @@
-
 from math import sqrt, exp, log
 
 from base import StochasticProcess
 
 
 class WienerProcess(StochasticProcess):
-    """
-    class implementing general Gauss process between grid dates
-    """
+    """ class implementing general Gauss process between grid dates """
 
     def __init__(self, mu=0., sigma=1., start=0.):
         super(WienerProcess, self).__init__(start)
@@ -27,17 +24,14 @@ class WienerProcess(StochasticProcess):
         return x + self._drift(x, s, e) + self._diffusion(x, s, e) * q
 
     def mean(self, t):
-        return self.start + self._mu * t
+        return self.start + self._drift(0., 0., t)
 
     def variance(self, t):
-        return self._sigma ** 2 * t
+        return self._diffusion(0., 0, t) ** 2
 
 
 class OrnsteinUhlenbeckProcess(StochasticProcess):
-    """
-    class implementing Ornstein Uhlenbeck process
-
-    """
+    """ class implementing Ornstein Uhlenbeck process """
 
     def __init__(self, theta=0.1, mu=0.1, sigma=0.1, start=0.0):
         r"""
@@ -82,9 +76,7 @@ class OrnsteinUhlenbeckProcess(StochasticProcess):
 
 
 class GeometricBrownianMotion(WienerProcess):
-    """
-    class implementing general Gauss process between grid dates
-    """
+    """ class implementing general Gauss process between grid dates """
 
     def __init__(self, mu=0., sigma=1., start=1.):
         super(GeometricBrownianMotion, self).__init__(mu, sigma, start)
@@ -103,3 +95,64 @@ class GeometricBrownianMotion(WienerProcess):
         return self.start ** 2 * exp(2 * self._mu * t) * (exp(self._sigma ** 2 * t) - 1)
 
 
+class TimeDependentWienerProcess(WienerProcess):
+    """ class implementing a Gauss process with time depending drift and diffusion """
+
+    def __init__(self, mu=(0.,), sigma=(1.,), time=1., start=0.):
+        assert len(mu) == len(sigma)
+        super(TimeDependentWienerProcess, self).__init__(mu, sigma, start)
+        if isinstance(time, float):
+            self._time = list()
+            t = 0.
+            for _ in tuple(self._mu):
+                self._time.append(t)
+                t += time
+        else:
+            self._time = list(time)
+        self._variance = list(s * s for s in self._sigma)
+        self._diffusion_driver = super(TimeDependentWienerProcess, self).diffusion_driver
+
+    def __str__(self):
+        return 'term-N(mu=%s, sigma=%s)' % (str(tuple(self._mu)), str(tuple(self._sigma)))
+
+    def _drift(self, x, s, e):
+        return self._integrate(self._mu, s, e)
+
+    def _diffusion(self, x, s, e):
+        return sqrt(self._integrate(self._variance, s, e))
+
+    def _integrate(self, p, s, e):
+        if e < s:
+            return self._integrate(p, e, s)
+        elif e == s:
+            return 0.0
+
+        before = [(v, t) for v, t in zip(p, self._time) if t <= s]
+        between = [(v, t) for v, t in zip(p, self._time) if s < t < e]
+        value = before[-1][0] if before else between[0][0]
+        current = s
+        result = 0.0
+        for v, t in between:
+            result += value * (t - current)
+            value = v
+            current = t
+        result += value * (e - current)
+        return result
+
+
+class TimeDependentGeometricBrownianMotion(TimeDependentWienerProcess):
+    def __init__(self, mu=(0.,), sigma=(1.,), time=1., start=1.):
+        super(TimeDependentGeometricBrownianMotion, self).__init__(mu, sigma, time, start)
+        self._diffusion_driver = super(TimeDependentGeometricBrownianMotion, self).diffusion_driver
+
+    def __str__(self):
+        return 'term-LN(mu=%s, sigma=%s)' % (str(tuple(self._mu)), str(tuple(self._sigma)))
+
+    def evolve(self, x, s, e, q):
+        return x * exp(super(TimeDependentGeometricBrownianMotion, self).evolve(0., s, e, q))
+
+    def mean(self, t):
+        return self.start * exp(self._drift(0., 0., t))
+
+    def variance(self, t):
+        return self.mean(t) ** 2 * (exp(self._diffusion(0., 0., t) ** 2) - 1)
