@@ -334,9 +334,9 @@ class TimeDependentGeometricBrownianMotionUnitTests(TermWienerProcessUnitTests):
         super(TimeDependentGeometricBrownianMotionUnitTests, self).setUp()
         self.path = 5000
         self.places = 0
-        self.grid = range(20)
+        self.grid = range(10)
         self.process = TimeDependentGeometricBrownianMotion([0., 0.05, -0.05, 0.], [0.1, .005, 0.2, 0.12],
-                                                            [0., 3., 5., 7.])
+                                                            [0., 3., 5., 10.])
 
     def test_compare(self):
         process = GeometricBrownianMotion(mu=0.01, sigma=0.01)
