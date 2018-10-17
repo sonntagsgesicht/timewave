@@ -33,6 +33,7 @@ class StochasticProcess(object):
         :param start: initial state :math:`X_0`
 
         """
+        super(StochasticProcess, self).__init__()
         self.start = start
         self._diffusion_driver = self
 

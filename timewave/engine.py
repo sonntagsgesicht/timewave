@@ -21,6 +21,7 @@ class Producer(object):
     """
 
     def __init__(self, func=None, initial_state=None):
+        super(Producer, self).__init__()
         if func is None:
             func = (lambda s, d: s.value)
         self.func = func
@@ -87,6 +88,7 @@ class Engine(object):
     """
 
     def __init__(self, producer=None, consumer=None):
+        super(Engine, self).__init__()
 
         assert isinstance(producer, Producer) and isinstance(consumer, Consumer)
         self.producer = producer
@@ -219,6 +221,7 @@ class Consumer(object):
 
         :type func: callable
         """
+        super(Consumer, self).__init__()
         if func is None:
             func = (lambda s: s.value)
         self.func = func
