@@ -95,6 +95,35 @@ class GeometricBrownianMotion(WienerProcess):
         return self.start ** 2 * exp(2 * self._mu * t) * (exp(self._sigma ** 2 * t) - 1)
 
 
+class TimeDependentParameter(object):
+
+    def __init__(self, parameter=0.0, time=1.0):
+
+        if isinstance(parameter, float):
+            func = (lambda x: parameter)
+        elif isinstance(parameter, (tuple, list)):
+            if isinstance(time, float):
+                time = list(float(i) * time for i, s in enumerate(parameter))
+            func = (lambda x: max(s for t, s in zip(time, parameter) if t <= x))
+        else:
+            func = (lambda x: parameter(x))
+
+        self._parameter = parameter
+        self._time = time
+        self._func = func
+
+    def __call__(self, x):
+        return self._func(x)
+
+    def __str__(self):
+        if isinstance(self._parameter, float):
+            return str(self._parameter)
+        elif isinstance(self._time, (tuple, list)):
+            return '%f ... %f' % (self(self._time[0]), self(self._time[-1]))
+        else:
+            return '%f ...' % self(0.)
+
+
 class TimeDependentWienerProcess(WienerProcess):
     """ class implementing a Gauss process with time depending drift and diffusion """
 
@@ -107,35 +136,15 @@ class TimeDependentWienerProcess(WienerProcess):
         else:
             self._time = float(time)
 
-        # init mu
-        if isinstance(mu, float):
-            self._mu = (lambda x: mu)
-        elif isinstance(mu, (tuple, list)):
-            if isinstance(time, (tuple, list)):
-                self._mu = (lambda x: max(m for t, m in zip(time, mu) if t <= x))
-            else:
-                self._mu = (lambda x: max(m for i, m in enumerate(mu) if float(i) * time <= x))
-        else:
-            self._mu = mu
-
-        # init sigma
-        if isinstance(sigma, float):
-            self._sigma = (lambda x: sigma)
-        elif isinstance(sigma, (tuple, list)):
-            if isinstance(time, (tuple, list)):
-                self._sigma = (lambda x: max(s for t, s in zip(time, sigma) if t <= x))
-            else:
-                self._sigma = (lambda x: max(s for i, s in enumerate(sigma) if float(i) * time <= x))
-        else:
-            self._sigma = sigma
+        # init mu and sigma
+        self._mu = TimeDependentParameter(mu, time)
+        self._sigma = TimeDependentParameter(sigma, time)
 
         self._variance = (lambda x: self._sigma(x) ** 2)
         self._diffusion_driver = super(TimeDependentWienerProcess, self).diffusion_driver
 
     def __str__(self):
-        mu = tuple(self._mu(x) for x in self._time)
-        sigma = tuple(self._sigma(x) for x in self._time)
-        return 'term-N(mu=%s, sigma=%s)' % (str(mu), str(sigma))
+        return 'term-N(mu=%s, sigma=%s)' % (str(self._mu), str(self._sigma))
 
     def _drift(self, x, s, e):
         return self._integrate(self._mu, s, e)
@@ -161,9 +170,7 @@ class TimeDependentGeometricBrownianMotion(TimeDependentWienerProcess):
         self._diffusion_driver = super(TimeDependentGeometricBrownianMotion, self).diffusion_driver
 
     def __str__(self):
-        mu = tuple(self._mu(x) for x in self._time)
-        sigma = tuple(self._sigma(x) for x in self._time)
-        return 'term-LN(mu=%s, sigma=%s)' % (str(mu), str(sigma))
+        return 'term-LN(mu=%s, sigma=%s)' % (str(self._mu), str(self._sigma))
 
     def evolve(self, x, s, e, q):
         return x * exp(super(TimeDependentGeometricBrownianMotion, self).evolve(0., s, e, q))
