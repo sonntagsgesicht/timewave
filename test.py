@@ -303,6 +303,16 @@ class GeometricBrownianMotionUnitTests(GaussEvolutionProducerUnitTests):
         self.grid = range(20)
         self.process = GeometricBrownianMotion(.1, .01, 0.1)
 
+    def test_mean(self):
+        start, drift, vol, time = 1., 0.1, 0.1, 1.
+        expected = start * exp((drift + 0.5 * vol ** 2) * time)
+        process = GeometricBrownianMotion(drift, vol, start)
+        e = Engine(GaussEvolutionProducer(process), StatisticsConsumer())
+        for seed in range(100):
+            r = e.run(grid=[0., time], seed=seed)
+            d, r = r[-1]
+            self.assertTrue(min(r.mean, r.median) <= expected <= max(r.mean, r.median))
+
 
 class TermWienerProcessUnitTests(GaussEvolutionProducerUnitTests):
     def setUp(self):

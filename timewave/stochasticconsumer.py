@@ -21,7 +21,7 @@ class _Statistics(object):
         self.stdev = sqrt(self.variance)
         self.min = sps[0]
         self.max = sps[-1]
-        self.median = sps[p[50]]
+        self.median = sps[int(len(sps)*0.5)]
         self.box = [sps[0], sps[p[25]], sps[p[50]], sps[p[75]], sps[-1]]
         self.percentile = [sps[int(i)] for i in p]
         self.sample = data

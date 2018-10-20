@@ -1,23 +1,22 @@
 import numpy as np
+import math
 
 from test import MultiGaussEvolutionProducerUnitTests
 from timewave import FiniteStateMarkovChain, AugmentedFiniteStateMarkovChain
 from timewave import GaussEvolutionProducer, StatisticsConsumer, Engine
 from timewave.stochasticconsumer import _MultiStatistics
+from timewave import GeometricBrownianMotion
 
-
-def do_test(t):
-    c = MultiGaussEvolutionProducerUnitTests(t)
-    c.setUp()
-    getattr(c, t)()
-    # c.test_multi_gauss_process()
-    c.tearDown()
-
-
-# do_test('test_wiener_process')
-# do_test('test_multi_gauss_process')
-# do_test('test_correlation')
-
+if True:
+    start, drift, vol, time = 1., 0.01, 0.1, 1.
+    expected = start * math.exp((drift + 0.5 * vol ** 2) * time)
+    process = GeometricBrownianMotion(drift, vol, start)
+    e = Engine(GaussEvolutionProducer(process), StatisticsConsumer())
+    for seed in range(100):
+        r = e.run(grid=[0., time], seed=seed)
+        d, r = r[-1]
+        print seed, expected, r.mean, r.median
+        assert min(r.mean, r.median) <= expected <= max(r.mean, r.median)
 
 n = 10
 grid = range(n)
@@ -76,7 +75,7 @@ if False:
         print 'error   ', error
         # assert abs(error) < 1e-2
 
-if True:
+if False:
     augmentation = (lambda x: 1. if x == 3 else 0.)
     transition = [
         [0.7, 0.2, 0.099, 0.001],
@@ -93,7 +92,7 @@ if True:
     process.start = [1., 1., 1., 0.]
     print process.start
     print underlying.start
-    
+
     producer = GaussEvolutionProducer(process)
     consumer = StatisticsConsumer(func=process.eval)
     stats = Engine(producer, consumer).run(grid, path)
@@ -123,3 +122,16 @@ if True:
         print 'practise', practise
         print 'error   ', error
         # assert abs(error) < 1e-2
+
+if False:
+    def do_test(t):
+        c = MultiGaussEvolutionProducerUnitTests(t)
+        c.setUp()
+        getattr(c, t)()
+        # c.test_multi_gauss_process()
+        c.tearDown()
+
+
+    do_test('test_wiener_process')
+    do_test('test_multi_gauss_process')
+    do_test('test_correlation')
