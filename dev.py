@@ -1,38 +1,63 @@
 import numpy as np
 import math
+from random import Random
 
 from test import MultiGaussEvolutionProducerUnitTests
 from timewave import FiniteStateMarkovChain, AugmentedFiniteStateMarkovChain
 from timewave import GaussEvolutionProducer, StatisticsConsumer, Engine
-from timewave.stochasticconsumer import _MultiStatistics
-from timewave import GeometricBrownianMotion
+from timewave.stochasticconsumer import _MultiStatistics, _Statistics
+from timewave import GeometricBrownianMotion, WienerProcess, TimeDependentGeometricBrownianMotion
 
 if True:
-    start, drift, vol, time = 1., 0.01, 0.1, 1.
-    expected = start * math.exp((drift + 0.5 * vol ** 2) * time)
-    process = GeometricBrownianMotion(drift, vol, start)
+    n = int(2e5)
+    start, drift, vol, time = 1., 1., .1, 1.
+    l, p = (lambda qq, q: start + drift * time + vol * math.sqrt(time) * q), WienerProcess(drift, vol, start)
+    l, p = (lambda qq, q: start * math.exp(drift * time + vol * math.sqrt(time) * q)), GeometricBrownianMotion(drift, vol, start)
+
+    rnd = Random()
+    seed = rnd.randint(0, 10000)
+    print 'seed:', seed
+    rnd.seed(seed)
+    q = _Statistics([l(rnd.gauss(0., 1.), rnd.gauss(0., 1.)) for _ in range(n)])
+
+    r = Engine(GaussEvolutionProducer(p), StatisticsConsumer()).run(grid=[0., time], num_of_paths=n, seed=seed)#, num_of_workers=None)
+    r = r[-1][1]
+
+    # print q.sample
+    # print r.sample
+    print 'mean     :', p.mean(time)
+    print 'variance :', p.variance(time)
+    print q
+    print r
+
+if True:
+    start, drift, vol, time = 1., 0.01, .1, 1.
+
+    expected = start * math.exp(drift * time)
+    process = TimeDependentGeometricBrownianMotion(drift - 0.5 * vol ** 2, vol, start)
     e = Engine(GaussEvolutionProducer(process), StatisticsConsumer())
-    for seed in range(100):
-        r = e.run(grid=[0., time], seed=seed)
+    for seed in range(10):
+        r = e.run(grid=[0., time], seed=seed, num_of_paths=10000, num_of_workers=None)
         d, r = r[-1]
         print seed, expected, r.mean, r.median
-        assert min(r.mean, r.median) <= expected <= max(r.mean, r.median)
+        #assert min(r.mean, r.median) <= expected <= max(r.mean, r.median)
 
-n = 10
-grid = range(n)
-path = 20000
+if False:
+    n = 10
+    grid = range(n)
+    path = 20000
 
-s, t = [0.3427338525545087, 0.6572661474454913], [[0.16046606, 0.83953394], [0.46142568, 0.53857432]]
-s, t = (0.5, 0.5, .0), ((.75, .25, .0), (.25, .5, .25), (.0, .25, .75))
-# s, t = (1., 0., 0.), ((.75, .25, .0), (.25, .5, .25), (.0, .25, .75))
-# s, t = (0., 1., 0.), ((.75, .25, .0), (.25, .5, .25), (.0, .25, .75))
-# s, t = (0., 0., 1.), ((.75, .25, .0), (.25, .5, .25), (.0, .25, .75))
-# s, t = (0.2, 0.6, 0.2), ((.75, .25, .0), (.25, .5, .25), (.0, .25, .75))
-# s, t = (0.5, 0., .5), ((.5, .5, .0), (.25, .5, .25), (.0, .5, .5))
-# s, t = (.5, .5), ((.8, .2), (.3, .7))
-# s, t = (0., 1.), ((.8, .2), (.3, .7))
-# s, t = (.5, .5), ((.8, .2), (.2, .8))
-f = (.0, .1, .1)
+    #s, t = [0.3427338525545087, 0.6572661474454913], [[0.16046606, 0.83953394], [0.46142568, 0.53857432]]
+    #s, t = (0.5, 0.5, .0), ((.75, .25, .0), (.25, .5, .25), (.0, .25, .75))
+    # s, t = (1., 0., 0.), ((.75, .25, .0), (.25, .5, .25), (.0, .25, .75))
+    # s, t = (0., 1., 0.), ((.75, .25, .0), (.25, .5, .25), (.0, .25, .75))
+    # s, t = (0., 0., 1.), ((.75, .25, .0), (.25, .5, .25), (.0, .25, .75))
+    # s, t = (0.2, 0.6, 0.2), ((.75, .25, .0), (.25, .5, .25), (.0, .25, .75))
+    # s, t = (0.5, 0., .5), ((.5, .5, .0), (.25, .5, .25), (.0, .5, .5))
+    # s, t = (.5, .5), ((.8, .2), (.3, .7))
+    # s, t = (0., 1.), ((.8, .2), (.3, .7))
+    # s, t = (.5, .5), ((.8, .2), (.2, .8))
+    f = (.0, .1, .1)
 
 if False:
     p = AugmentedFiniteStateMarkovChain.random(5)
@@ -130,7 +155,6 @@ if False:
         getattr(c, t)()
         # c.test_multi_gauss_process()
         c.tearDown()
-
 
     do_test('test_wiener_process')
     do_test('test_multi_gauss_process')

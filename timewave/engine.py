@@ -47,13 +47,16 @@ class Producer(object):
     def initialize_worker(self, process_num=None):
         """ inits producer for a simulation run on a single process """
         self.initial_state.process = process_num
-        self.random.seed(hash(self.seed) + hash(process_num))
+        seed = self.seed if process_num is None else hash(self.seed) + hash(process_num)
+        seed = self.seed if process_num is None else self.seed + process_num
+        self.random.seed(seed)
 
     def initialize_path(self, path_num=None):
         """ inits producer for next path, i.e. sets current state to initial state"""
         self.state = copy(self.initial_state)
         self.state.path = path_num
-        self.random.seed(hash(self.seed) + hash(path_num))
+        # seed = self.seed if path_num is None else hash(self.seed) + hash(path_num)
+        # self.random.seed(seed)
 
     def evolve(self, new_date):
         """

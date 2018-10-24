@@ -89,10 +89,10 @@ class GeometricBrownianMotion(WienerProcess):
         return x * exp(super(GeometricBrownianMotion, self).evolve(0., s, e, q))
 
     def mean(self, t):
-        return self.start * exp(self._mu * t)
+        return self.start * exp(self._drift(0., 0., t) + self._diffusion(0., 0., t) ** 2)
 
     def variance(self, t):
-        return self.start ** 2 * exp(2 * self._mu * t) * (exp(self._sigma ** 2 * t) - 1)
+        return self.mean(t) ** 2 * (exp(self._diffusion(0., 0., t) ** 2) - 1)
 
 
 class TimeDependentParameter(object):
@@ -176,7 +176,7 @@ class TimeDependentGeometricBrownianMotion(TimeDependentWienerProcess):
         return x * exp(super(TimeDependentGeometricBrownianMotion, self).evolve(0., s, e, q))
 
     def mean(self, t):
-        return self.start * exp(self._drift(0., 0., t))
+        return self.start * exp(self._drift(0., 0., t) + self._diffusion(0., 0., t) ** 2)
 
     def variance(self, t):
         return self.mean(t) ** 2 * (exp(self._diffusion(0., 0., t) ** 2) - 1)
