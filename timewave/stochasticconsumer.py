@@ -12,7 +12,7 @@ class _Statistics(object):
     """
 
     def keys(self):
-        return 'count', 'mean', 'stdev', 'variance', 'min', 'median', 'max'
+        return 'count', 'mean', 'stdev', 'variance', 'skewness', 'kurtosis', 'median', 'min', 'max'
 
     def values(self):
         return tuple(getattr(self, a, 0.0) for a in self.keys())
@@ -24,17 +24,27 @@ class _Statistics(object):
         sps = sorted(data)
         l = float(len(sps))
         p = [int(i * l * 0.01) for i in range(100)]
+        m1 = self._moment(sps)
+        cm2 = self._moment(sps, 2, m1)
+        cm3 = self._moment(sps, 3, m1)
+        cm4 = self._moment(sps, 4, m1)
         self.count = len(sps)
-        self.mean = sum(sps) / l
-        self.variance = 0. if len(set(sps)) == 1 else sum([rr ** 2 for rr in sps]) / (l - 1) - self.mean ** 2
+        self.mean = m1
+        self.variance = 0. if len(set(sps)) == 1 else cm2 * l / (l-1.)
         self.stdev = sqrt(self.variance)
+        self.skewness = 0. if len(set(sps)) == 1 else cm3 / (self.stdev**3)
+        self.kurtosis = 0. if len(set(sps)) == 1 else cm4 / cm2**2 - 3.
+        self.median = sps[p[50]]
         self.min = sps[0]
         self.max = sps[-1]
-        self.median = sps[p[50]]
         self.box = [sps[0], sps[p[25]], sps[p[50]], sps[p[75]], sps[-1]]
         self.percentile = [sps[int(i)] for i in p]
         self.sample = data
         self.expected = expected
+
+    @staticmethod
+    def _moment(data, degree=1, mean=0.):
+        return sum([(rr-mean)**degree for rr in data]) / float(len(data))
 
     def __contains__(self, item):
         return item in self.keys()
@@ -57,7 +67,7 @@ class _Statistics(object):
                     e, v = self.expected[k], getattr(self, k)
 
                     res[l] += ' - ' + ('%0.8f' % e).rjust(mv) + ' = ' + ('%0.8f' % (v - e)).rjust(mv)
-                    if v:
+                    if e:
                         res[l] += '  (' + ('%+0.3f' % (100. * (v - e) / e)).rjust(mv) + ' %)'
 
         return '\n'.join(res)

@@ -67,6 +67,9 @@ class StochasticProcess(object):
         """
         return 0.0
 
+    def median(self, t):
+        return 0.0
+
     def variance(self, t):
         """ second central moment of time :math:`t` increment
 
@@ -75,6 +78,12 @@ class StochasticProcess(object):
         :return: variance, i.e. second central moment of time :math:`t` increment
 
         """
+        return 0.0
+
+    def skewness(self, t):
+        return 0.0
+
+    def kurtosis(self, t):
         return 0.0
 
 

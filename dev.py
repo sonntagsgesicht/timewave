@@ -1,5 +1,4 @@
 import numpy as np
-import math
 from math import exp, log, sqrt
 from random import Random
 
@@ -9,12 +8,12 @@ from timewave import GaussEvolutionProducer, StatisticsConsumer, Engine
 from timewave.stochasticconsumer import _MultiStatistics, _Statistics
 from timewave import GeometricBrownianMotion, WienerProcess, TimeDependentGeometricBrownianMotion
 
-if False:
+if True:
     rnd = Random()
     seed = rnd.randint(0, 1000)
     rnd.seed(seed)
 
-    n, start, drift, vol, time = int(100001), 1., .1, .5, 5.
+    n, start, drift, vol, time = int(100001), 1., .1, .5, 1.
     l, p = (lambda qq, q: start + drift * time + vol * sqrt(time) * q), WienerProcess(drift, vol, start)
     l, p = (lambda qq, q: start * exp(drift * time + vol * sqrt(time) * q)), GeometricBrownianMotion(drift, vol, start)
     l, p = (lambda qq, q: start * exp(drift * time + vol * sqrt(time) * q)), TimeDependentGeometricBrownianMotion(drift, vol, start)
@@ -23,9 +22,11 @@ if False:
 
     print 'engine vs expected (seed %d)' % seed
     r.expected = {'mean': p.mean(time),
-                  'median': start * exp(drift*time),
+                  'median': p.median(time),
                   'stdev': sqrt(p.variance(time)),
-                  'variance': p.variance(time)
+                  'variance': p.variance(time),
+                  'skewness': p.skewness(time),
+                  'kurtosis': p.kurtosis(time)
                   }
     print r
 
@@ -49,7 +50,7 @@ if False:
 
     print ''
     print 'mean     >\n', _Statistics(mean, mean=process.mean(time))
-    print 'median   >\n', _Statistics(median, mean=start*exp(time*drift))
+    print 'median   >\n', _Statistics(median, mean=process.median(time))
     print 'stdev    >\n', _Statistics(stdev, mean=sqrt(process.variance(time)))
     print 'variance >\n', _Statistics(variance, mean=process.variance(time))
 

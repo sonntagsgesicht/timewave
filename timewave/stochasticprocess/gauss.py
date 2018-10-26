@@ -26,6 +26,9 @@ class WienerProcess(StochasticProcess):
     def mean(self, t):
         return self.start + self._drift(0., 0., t)
 
+    def median(self, t):
+        return self.mean(t)
+
     def variance(self, t):
         return self._diffusion(0., 0, t) ** 2
 
@@ -91,8 +94,19 @@ class GeometricBrownianMotion(WienerProcess):
     def mean(self, t):
         return self.start * exp(self._drift(0., 0., t) + 0.5 * self._diffusion(0., 0., t) ** 2)
 
+    def median(self, t):
+        return self.start * exp(self._drift(0., 0., t))
+
     def variance(self, t):
         return (self.mean(t) ** 2) * (exp(self._diffusion(0., 0., t) ** 2) - 1)
+
+    def skewness(self, t):
+        es = exp(self._diffusion(0., 0., t) ** 2)
+        return (es + 2.) * sqrt(es - 1)
+
+    def kurtosis(self, t):
+        es = exp(self._diffusion(0., 0., t) ** 2)
+        return es ** 4 + 2 * es ** 3 + 3 * es ** 2 - 6
 
 
 class TimeDependentParameter(object):
@@ -166,28 +180,40 @@ class TimeDependentWienerProcess(WienerProcess):
         return 'term-N(mu=%s, sigma=%s)' % (str(self._mu), str(self._sigma))
 
     def _drift(self, x, s, e):
-        return self._integrate(self._mu, s, e)
+        return self._mu.integrate(s, e)
 
     def _diffusion(self, x, s, e):
-        return sqrt(self._integrate(self._variance, s, e))
-
-    def _integrate(self, f, s, e):
-        return f.integrate(s, e)
+        return sqrt(self._variance.integrate(s, e))
 
 
-class TimeDependentGeometricBrownianMotion(TimeDependentWienerProcess):
+class TimeDependentGeometricBrownianMotion(GeometricBrownianMotion):
     def __init__(self, mu=0., sigma=1., time=1., start=1.):
-        super(TimeDependentGeometricBrownianMotion, self).__init__(mu, sigma, time, start)
+        super(TimeDependentGeometricBrownianMotion, self).__init__(mu, sigma, start)
+        # init time
+        if isinstance(time, (tuple, list)):
+            self._time = time
+        else:
+            self._time = float(time)
+
+        # init mu and sigma
+        self._mu = TimeDependentParameter(mu, time)
+        self._sigma = TimeDependentParameter(sigma, time)
+
+        if isinstance(sigma, float):
+            var = sigma ** 2
+        elif isinstance(sigma, (tuple, list)):
+            var = tuple(x ** 2 for x in sigma)
+        else:
+            var = (lambda x: self._sigma(x) ** 2)
+        self._variance = TimeDependentParameter(var, time)
+
         self._diffusion_driver = super(TimeDependentGeometricBrownianMotion, self).diffusion_driver
 
     def __str__(self):
         return 'term-LN(mu=%s, sigma=%s)' % (str(self._mu), str(self._sigma))
 
-    def evolve(self, x, s, e, q):
-        return x * exp(super(TimeDependentGeometricBrownianMotion, self).evolve(0., s, e, q))
+    def _drift(self, x, s, e):
+        return self._mu.integrate(s, e)
 
-    def mean(self, t):
-        return self.start * exp(self._drift(0., 0., t) + 0.5 * self._diffusion(0., 0., t) ** 2)
-
-    def variance(self, t):
-        return self.mean(t) ** 2 * (exp(self._diffusion(0., 0., t) ** 2) - 1)
+    def _diffusion(self, x, s, e):
+        return sqrt(self._variance.integrate(s, e))
