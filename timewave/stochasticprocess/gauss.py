@@ -89,14 +89,13 @@ class GeometricBrownianMotion(WienerProcess):
         return x * exp(super(GeometricBrownianMotion, self).evolve(0., s, e, q))
 
     def mean(self, t):
-        return self.start * exp(self._drift(0., 0., t) + self._diffusion(0., 0., t) ** 2)
+        return self.start * exp(self._drift(0., 0., t) + 0.5 * self._diffusion(0., 0., t) ** 2)
 
     def variance(self, t):
-        return self.mean(t) ** 2 * (exp(self._diffusion(0., 0., t) ** 2) - 1)
+        return (self.mean(t) ** 2) * (exp(self._diffusion(0., 0., t) ** 2) - 1)
 
 
 class TimeDependentParameter(object):
-
     def __init__(self, parameter=0.0, time=1.0):
 
         if isinstance(parameter, float):
@@ -123,6 +122,19 @@ class TimeDependentParameter(object):
         else:
             return '%f ...' % self(0.)
 
+    def integrate(self, s, e):
+        if e < s:
+            return self.integrate(e, s)
+        elif e == s:
+            return 0.0
+        if isinstance(self._parameter, float):
+            return self._parameter * (e - s)
+        if isinstance(self._time, (tuple, list)):
+            time = [s] + [t for t in self._time if s < t < e] + [e]
+        else:
+            time = [s + self._time * i for i in range(int((e - s) / self._time))] + [e]
+        return sum(self(x) * (y - x) for x, y in zip(time[:-1], time[1:]))
+
 
 class TimeDependentWienerProcess(WienerProcess):
     """ class implementing a Gauss process with time depending drift and diffusion """
@@ -140,7 +152,14 @@ class TimeDependentWienerProcess(WienerProcess):
         self._mu = TimeDependentParameter(mu, time)
         self._sigma = TimeDependentParameter(sigma, time)
 
-        self._variance = (lambda x: self._sigma(x) ** 2)
+        if isinstance(sigma, float):
+            var = sigma ** 2
+        elif isinstance(sigma, (tuple, list)):
+            var = tuple(x ** 2 for x in sigma)
+        else:
+            var = (lambda x: self._sigma(x) ** 2)
+        self._variance = TimeDependentParameter(var, time)
+
         self._diffusion_driver = super(TimeDependentWienerProcess, self).diffusion_driver
 
     def __str__(self):
@@ -153,15 +172,7 @@ class TimeDependentWienerProcess(WienerProcess):
         return sqrt(self._integrate(self._variance, s, e))
 
     def _integrate(self, f, s, e):
-        if e < s:
-            return self._integrate(f, e, s)
-        elif e == s:
-            return 0.0
-        if isinstance(self._time, (tuple, list)):
-            time = [s] + [t for t in self._time if s < t < e] + [e]
-        else:
-            time = [s + self._time * i for i in range(int((e - s) / self._time))] + [e]
-        return sum(f(x) * (y - x) for x, y in zip(time[:-1], time[1:]))
+        return f.integrate(s, e)
 
 
 class TimeDependentGeometricBrownianMotion(TimeDependentWienerProcess):
@@ -176,7 +187,7 @@ class TimeDependentGeometricBrownianMotion(TimeDependentWienerProcess):
         return x * exp(super(TimeDependentGeometricBrownianMotion, self).evolve(0., s, e, q))
 
     def mean(self, t):
-        return self.start * exp(self._drift(0., 0., t) + self._diffusion(0., 0., t) ** 2)
+        return self.start * exp(self._drift(0., 0., t) + 0.5 * self._diffusion(0., 0., t) ** 2)
 
     def variance(self, t):
         return self.mean(t) ** 2 * (exp(self._diffusion(0., 0., t) ** 2) - 1)

@@ -11,7 +11,16 @@ class _Statistics(object):
     calculate basic statistics for a 1 dim empirical sample
     """
 
-    def __init__(self, data):
+    def keys(self):
+        return 'count', 'mean', 'stdev', 'variance', 'min', 'median', 'max'
+
+    def values(self):
+        return tuple(getattr(self, a, 0.0) for a in self.keys())
+
+    def items(self):
+        return zip(self.keys(), self.values())
+
+    def __init__(self, data, **expected):
         sps = sorted(data)
         l = float(len(sps))
         p = [int(i * l * 0.01) for i in range(100)]
@@ -25,18 +34,36 @@ class _Statistics(object):
         self.box = [sps[0], sps[p[25]], sps[p[50]], sps[p[75]], sps[-1]]
         self.percentile = [sps[int(i)] for i in p]
         self.sample = data
+        self.expected = expected
+
+    def __contains__(self, item):
+        return item in self.keys()
+
+    def __iter__(self):
+        return self.keys()
+
+    def __getitem__(self, item):
+        return getattr(self, item)
 
     def __str__(self):
-        keys = ['count', 'mean', 'stdev', 'variance', 'min', 'median', 'max']
-        values = ['%0.8f' % getattr(self, a, 0.0) for a in keys]
+        f = (lambda v: '%0.8f' % v if isinstance(v, (int, float)) else '')
+        keys, values = self.keys(), map(f, self.values())
         mk = max(map(len, keys))
         mv = max(map(len, values))
         res = [a.ljust(mk) + ' : ' + v.rjust(mv) for a, v in zip(keys, values)]
+        if self.expected:
+            for l, k in enumerate(self.keys()):
+                if k in self.expected:
+                    e, v = self.expected[k], getattr(self, k)
+
+                    res[l] += ' - ' + ('%0.8f' % e).rjust(mv) + ' = ' + ('%0.8f' % (v - e)).rjust(mv)
+                    if v:
+                        res[l] += '  (' + ('%+0.3f' % (100. * (v - e) / e)).rjust(mv) + ' %)'
+
         return '\n'.join(res)
 
 
 class _MultiStatistics(object):
-
     _available = 'count', 'mean', 'variance', 'stdev', 'min', 'max', 'median', 'box', 'percentile', 'sample'
 
     def __init__(self, data):

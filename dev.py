@@ -1,5 +1,6 @@
 import numpy as np
 import math
+from math import exp, log, sqrt
 from random import Random
 
 from test import MultiGaussEvolutionProducerUnitTests
@@ -8,47 +9,57 @@ from timewave import GaussEvolutionProducer, StatisticsConsumer, Engine
 from timewave.stochasticconsumer import _MultiStatistics, _Statistics
 from timewave import GeometricBrownianMotion, WienerProcess, TimeDependentGeometricBrownianMotion
 
-if True:
-    n = int(2e5)
-    start, drift, vol, time = 1., 1., .1, 1.
-    l, p = (lambda qq, q: start + drift * time + vol * math.sqrt(time) * q), WienerProcess(drift, vol, start)
-    l, p = (lambda qq, q: start * math.exp(drift * time + vol * math.sqrt(time) * q)), GeometricBrownianMotion(drift, vol, start)
-
+if False:
     rnd = Random()
-    seed = rnd.randint(0, 10000)
-    print 'seed:', seed
+    seed = rnd.randint(0, 1000)
     rnd.seed(seed)
-    q = _Statistics([l(rnd.gauss(0., 1.), rnd.gauss(0., 1.)) for _ in range(n)])
 
-    r = Engine(GaussEvolutionProducer(p), StatisticsConsumer()).run(grid=[0., time], num_of_paths=n, seed=seed)#, num_of_workers=None)
-    r = r[-1][1]
+    n, start, drift, vol, time = int(100001), 1., .1, .5, 5.
+    l, p = (lambda qq, q: start + drift * time + vol * sqrt(time) * q), WienerProcess(drift, vol, start)
+    l, p = (lambda qq, q: start * exp(drift * time + vol * sqrt(time) * q)), GeometricBrownianMotion(drift, vol, start)
+    l, p = (lambda qq, q: start * exp(drift * time + vol * sqrt(time) * q)), TimeDependentGeometricBrownianMotion(drift, vol, start)
 
-    # print q.sample
-    # print r.sample
-    print 'mean     :', p.mean(time)
-    print 'variance :', p.variance(time)
-    print q
+    r = Engine(GaussEvolutionProducer(p), StatisticsConsumer()).run(grid=[0., time], num_of_paths=n)[-1][-1]
+
+    print 'engine vs expected (seed %d)' % seed
+    r.expected = {'mean': p.mean(time),
+                  'median': start * exp(drift*time),
+                  'stdev': sqrt(p.variance(time)),
+                  'variance': p.variance(time)
+                  }
     print r
 
-if True:
-    start, drift, vol, time = 1., 0.01, .1, 1.
+    print 'engine vs sample (seed %d)' % seed
+    r.expected = _Statistics([l(rnd.gauss(0., 1.), rnd.gauss(0., 1.)) for _ in range(n)])
+    print r
 
-    expected = start * math.exp(drift * time)
-    process = TimeDependentGeometricBrownianMotion(drift - 0.5 * vol ** 2, vol, start)
+if False:
+    start, drift, vol, time = 1., 0.1, .5, 1.
+
+    process = TimeDependentGeometricBrownianMotion(drift, vol, start)
     e = Engine(GaussEvolutionProducer(process), StatisticsConsumer())
-    for seed in range(10):
-        r = e.run(grid=[0., time], seed=seed, num_of_paths=10000, num_of_workers=None)
-        d, r = r[-1]
-        print seed, expected, r.mean, r.median
-        #assert min(r.mean, r.median) <= expected <= max(r.mean, r.median)
+    mean, median, stdev, variance = list(), list(), list(), list()
+    for seed in range(100):
+        print seed,
+        r = e.run(grid=[0., time], seed=seed, num_of_paths=10000, num_of_workers=None)[-1][-1]
+        mean.append(r.mean)
+        median.append(r.median)
+        stdev.append(r.stdev)
+        variance.append(r.variance)
+
+    print ''
+    print 'mean     >\n', _Statistics(mean, mean=process.mean(time))
+    print 'median   >\n', _Statistics(median, mean=start*exp(time*drift))
+    print 'stdev    >\n', _Statistics(stdev, mean=sqrt(process.variance(time)))
+    print 'variance >\n', _Statistics(variance, mean=process.variance(time))
 
 if False:
     n = 10
     grid = range(n)
     path = 20000
 
-    #s, t = [0.3427338525545087, 0.6572661474454913], [[0.16046606, 0.83953394], [0.46142568, 0.53857432]]
-    #s, t = (0.5, 0.5, .0), ((.75, .25, .0), (.25, .5, .25), (.0, .25, .75))
+    # s, t = [0.3427338525545087, 0.6572661474454913], [[0.16046606, 0.83953394], [0.46142568, 0.53857432]]
+    # s, t = (0.5, 0.5, .0), ((.75, .25, .0), (.25, .5, .25), (.0, .25, .75))
     # s, t = (1., 0., 0.), ((.75, .25, .0), (.25, .5, .25), (.0, .25, .75))
     # s, t = (0., 1., 0.), ((.75, .25, .0), (.25, .5, .25), (.0, .25, .75))
     # s, t = (0., 0., 1.), ((.75, .25, .0), (.25, .5, .25), (.0, .25, .75))
@@ -155,6 +166,7 @@ if False:
         getattr(c, t)()
         # c.test_multi_gauss_process()
         c.tearDown()
+
 
     do_test('test_wiener_process')
     do_test('test_multi_gauss_process')
