@@ -1,6 +1,8 @@
 from math import sqrt
+from random import Random, sample
 
 from consumers import TransposedConsumer
+from stochasticprocess import StochasticProcess
 
 
 # statistics and stochastic process consumers
@@ -10,9 +12,10 @@ class _Statistics(object):
     """
     calculate basic statistics for a 1 dim empirical sample
     """
+    _available = 'count', 'mean', 'stdev', 'variance', 'skewness', 'kurtosis', 'median', 'min', 'max'
 
     def keys(self):
-        return 'count', 'mean', 'stdev', 'variance', 'skewness', 'kurtosis', 'median', 'min', 'max'
+        return self._available
 
     def values(self):
         return tuple(getattr(self, a, 0.0) for a in self.keys())
@@ -20,7 +23,7 @@ class _Statistics(object):
     def items(self):
         return zip(self.keys(), self.values())
 
-    def __init__(self, data, **expected):
+    def __init__(self, data, description='', **expected):
         sps = sorted(data)
         l = float(len(sps))
         p = [int(i * l * 0.01) for i in range(100)]
@@ -28,23 +31,43 @@ class _Statistics(object):
         cm2 = self._moment(sps, 2, m1)
         cm3 = self._moment(sps, 3, m1)
         cm4 = self._moment(sps, 4, m1)
+        self.description = description
         self.count = len(sps)
         self.mean = m1
-        self.variance = 0. if len(set(sps)) == 1 else cm2 * l / (l-1.)
+        self.variance = 0. if len(set(sps)) == 1 else cm2 * l / (l - 1.)
         self.stdev = sqrt(self.variance)
-        self.skewness = 0. if len(set(sps)) == 1 else cm3 / (self.stdev**3)
-        self.kurtosis = 0. if len(set(sps)) == 1 else cm4 / cm2**2 - 3.
+        self.skewness = 0. if len(set(sps)) == 1 else cm3 / (self.stdev ** 3)
+        self.kurtosis = 0. if len(set(sps)) == 1 else cm4 / cm2 ** 2 - 3.
         self.median = sps[p[50]]
         self.min = sps[0]
         self.max = sps[-1]
         self.box = [sps[0], sps[p[25]], sps[p[50]], sps[p[75]], sps[-1]]
         self.percentile = [sps[int(i)] for i in p]
         self.sample = data
-        self.expected = expected
+        self.expected = self.get_expected(expected)
+
+    @classmethod
+    def get_expected(cls, expected):
+        # search for process, time tuple
+        if isinstance(expected, tuple):
+            process, time = expected
+        elif isinstance(expected, StochasticProcess):
+            process, time = expected, 1.
+        elif isinstance(expected, dict):
+            process, time = expected.get('process'), expected.get('time', 1.)
+        else:
+            process, time = None, None
+        # use expected moments from process
+        if process and time:
+            expected = dict()
+            for k in cls._available:
+                if hasattr(process, k):
+                    expected[k] = getattr(process, k)(time)
+        return expected
 
     @staticmethod
     def _moment(data, degree=1, mean=0.):
-        return sum([(rr-mean)**degree for rr in data]) / float(len(data))
+        return sum([(rr - mean) ** degree for rr in data]) / float(len(data))
 
     def __contains__(self, item):
         return item in self.keys()
@@ -61,20 +84,74 @@ class _Statistics(object):
         mk = max(map(len, keys))
         mv = max(map(len, values))
         res = [a.ljust(mk) + ' : ' + v.rjust(mv) for a, v in zip(keys, values)]
+
         if self.expected:
+            expected = self.get_expected(self.expected)
+            # build str from standard expected dict
             for l, k in enumerate(self.keys()):
-                if k in self.expected:
-                    e, v = self.expected[k], getattr(self, k)
+                if k in expected:
+                    e, v = expected[k], getattr(self, k)
 
                     res[l] += ' - ' + ('%0.8f' % e).rjust(mv) + ' = ' + ('%0.8f' % (v - e)).rjust(mv)
                     if e:
                         res[l] += '  (' + ('%+0.3f' % (100. * (v - e) / e)).rjust(mv) + ' %)'
 
+        res = [self.__class__.__name__ + '(' + self.description + ')'] + res
         return '\n'.join(res)
 
 
+class _BootstrapStatistics(list):
+    _available = 'mean', 'stdev', 'variance', 'skewness', 'kurtosis', 'median'
+
+    def keys(self):
+        return _BootstrapStatistics._available
+
+    def values(self):
+        return list(v for k, v in self.items())
+
+    def items(self):
+        keys = self.keys()
+        data = dict((k, list()) for k in keys)
+        for s in self:
+            for k in keys:
+                data[k].append(getattr(s, k))
+
+        self.expected = _Statistics.get_expected(self.expected)
+        res = list()
+        for k in keys:
+            if k in self.expected:
+                s = _Statistics(data[k], description=k, mean=self.expected.get(k))
+            else:
+                s = _Statistics(data[k], description=k)
+            res.append((k, s))
+        return res
+
+    def __init__(self, data, statistics=None, sample_len=0.5, sample_num=100, **expected):
+        # Jack knife n*(n-1)
+        # bootstrap n*(n-1), (n-1)*(n-2), ...
+        self._statistics = _Statistics if statistics is None else statistics
+        self.expected = _Statistics.get_expected(expected)
+
+        k = int(float(len(data)) * sample_len)
+        iterable = (self._statistics(sample(data, k), description=str(_)) for _ in range(sample_num))
+        super(_BootstrapStatistics, self).__init__(iterable)
+
+
+class _ConvergenceStatistics(object):
+    def __init__(self, data, statistics=None, **expected):
+        # convergence [:1] -> [:n]
+        pass
+
+
+class _ValidationStatistics(object):
+    def __init__(self, data, statistics=None, **expected):
+        # 60:40 validation test
+        pass
+
+
 class _MultiStatistics(object):
-    _available = 'count', 'mean', 'variance', 'stdev', 'min', 'max', 'median', 'box', 'percentile', 'sample'
+    _available = 'count', 'mean', 'variance', 'stdev', 'skewness', 'kurtosis', \
+                 'min', 'max', 'median', 'box', 'percentile', 'sample'
 
     def __init__(self, data):
         self._inner = list(_Statistics(d) for d in zip(*data))

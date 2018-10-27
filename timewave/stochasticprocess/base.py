@@ -1,3 +1,4 @@
+from math import sqrt
 
 
 class StochasticProcess(object):
@@ -79,6 +80,9 @@ class StochasticProcess(object):
 
         """
         return 0.0
+
+    def stdev(self, t):
+        return sqrt(self.variance(t))
 
     def skewness(self, t):
         return 0.0

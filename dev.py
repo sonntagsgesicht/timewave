@@ -5,34 +5,42 @@ from random import Random
 from test import MultiGaussEvolutionProducerUnitTests
 from timewave import FiniteStateMarkovChain, AugmentedFiniteStateMarkovChain
 from timewave import GaussEvolutionProducer, StatisticsConsumer, Engine
-from timewave.stochasticconsumer import _MultiStatistics, _Statistics
+from timewave.stochasticconsumer import _MultiStatistics, _Statistics, _BootstrapStatistics
 from timewave import GeometricBrownianMotion, WienerProcess, TimeDependentGeometricBrownianMotion
 
-if True:
+if False:
     rnd = Random()
     seed = rnd.randint(0, 1000)
     rnd.seed(seed)
 
-    n, start, drift, vol, time = int(100001), 1., .1, .5, 1.
+    n, start, drift, vol, time = int(1001), 1., .1, .5, 1.
     l, p = (lambda qq, q: start + drift * time + vol * sqrt(time) * q), WienerProcess(drift, vol, start)
     l, p = (lambda qq, q: start * exp(drift * time + vol * sqrt(time) * q)), GeometricBrownianMotion(drift, vol, start)
     l, p = (lambda qq, q: start * exp(drift * time + vol * sqrt(time) * q)), TimeDependentGeometricBrownianMotion(drift, vol, start)
 
     r = Engine(GaussEvolutionProducer(p), StatisticsConsumer()).run(grid=[0., time], num_of_paths=n)[-1][-1]
 
-    print 'engine vs expected (seed %d)' % seed
-    r.expected = {'mean': p.mean(time),
-                  'median': p.median(time),
-                  'stdev': sqrt(p.variance(time)),
-                  'variance': p.variance(time),
-                  'skewness': p.skewness(time),
-                  'kurtosis': p.kurtosis(time)
-                  }
+    r.description = 'engine vs expected (seed %d)' % seed
+    r.expected = p, time
     print r
 
-    print 'engine vs sample (seed %d)' % seed
+    r.description = 'engine vs sample (seed %d)' % seed
     r.expected = _Statistics([l(rnd.gauss(0., 1.), rnd.gauss(0., 1.)) for _ in range(n)])
     print r
+
+
+if True:
+    start, drift, vol, time = 1., 0.1, .5, 1.
+
+    process = TimeDependentGeometricBrownianMotion(drift, vol, start)
+    e = Engine(GaussEvolutionProducer(process), StatisticsConsumer(statistics=_BootstrapStatistics))
+    r = e.run(grid=[0., time], num_of_paths=100000, num_of_workers=None)[-1][-1]
+    r.expected = process
+    # for s in r:
+    #     print s
+
+    for b in r.values():
+        print b
 
 if False:
     start, drift, vol, time = 1., 0.1, .5, 1.
@@ -42,7 +50,7 @@ if False:
     mean, median, stdev, variance = list(), list(), list(), list()
     for seed in range(100):
         print seed,
-        r = e.run(grid=[0., time], seed=seed, num_of_paths=10000, num_of_workers=None)[-1][-1]
+        r = e.run(grid=[0., time], seed=seed, num_of_paths=1000, num_of_workers=None)[-1][-1]
         mean.append(r.mean)
         median.append(r.median)
         stdev.append(r.stdev)
