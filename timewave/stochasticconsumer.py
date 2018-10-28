@@ -216,8 +216,8 @@ class StochasticProcessStatisticsConsumer(StatisticsConsumer):
                 a = getattr(sps, k)
                 if isinstance(a, (int, float, str)):
                     keys.append(k)
-                else:
-                    delattr(sps, k)
+                #else:
+                #    delattr(sps, k)
         for k in keys:
             setattr(sps, k, list())
         grid = list()

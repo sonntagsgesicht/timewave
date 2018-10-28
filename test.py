@@ -13,8 +13,39 @@ try:
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import axes3d
     from matplotlib import cm
+
+    def plot_consumer_result(result, grid=None, title='', path=None):
+        for l in result:
+            plt.plot(grid, l)
+        plt.title(title)
+        plt.xlabel("time, $t$")
+        plt.ylabel("position of process")
+        if path:
+            plt.savefig(path + sep + title + '.pdf')
+            plt.close()
+
+
+    def plot_timewave_result(result, title='', path=None):
+        # Plot a basic wireframe.
+        x, y, z = result
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.plot_trisurf(x, y, z, linewidth=0.2, antialiased=True, cmap=cm.coolwarm)
+        plt.title(title)
+        if path:
+            plt.savefig(path + sep + title + '.pdf')
+            plt.close()
+
 except ImportError:
     print('timewave graphics not available due to ImportError importing matplotlib.pyplot')
+
+    def plot_consumer_result(*args):
+        pass
+
+
+    def plot_timewave_result(*args):
+        pass
+
 
 from timewave.engine import Engine, Producer, Consumer
 from timewave.producers import MultiProducer, DeterministicProducer, StringReaderProducer
@@ -26,8 +57,7 @@ from timewave.stochasticprocess.markovchain import FiniteStateMarkovChain, Finit
     FiniteStateContinuousTimeMarkovChain, AugmentedFiniteStateMarkovChain
 from timewave.stochasticproducer import GaussEvolutionProducer, MultiGaussEvolutionProducer
 from timewave.stochasticconsumer import StatisticsConsumer, StochasticProcessStatisticsConsumer, TimeWaveConsumer, \
-    _MultiStatistics, _Statistics
-from timewave.plot import plot_consumer_result, plot_timewave_result
+    _MultiStatistics
 
 PROFILING = False
 
@@ -358,7 +388,7 @@ class TimeDependentGeometricBrownianMotionUnitTests(TermWienerProcessUnitTests):
     def test_compare(self):
         process = GeometricBrownianMotion(mu=0.01, sigma=0.01)
         for g in self.grid:
-            self.assertAlmostEqual(process.mean(g), exp(process._mu * g + process._sigma ** 2 * g))
+            self.assertAlmostEqual(process.mean(g), exp(process._mu * g + 0.5 * process._sigma ** 2 * g))
             self.assertAlmostEqual(process.variance(g), process.mean(g) ** 2 * (exp(process._sigma ** 2 * g) - 1))
 
         term_process = TimeDependentGeometricBrownianMotion(mu=(0.01,), sigma=(0.01,))
@@ -395,7 +425,7 @@ class MarkovChainEvolutionProducerUnitTests(unittest.TestCase):
                 self.assertAlmostEqual(pv, sv, self.places)
 
     def test_random_statistics(self):
-        for d in range(2, 10, 2):
+        for d in range(2, 4, 2):
             process = self.process.__class__.random(d)
             producer = GaussEvolutionProducer(process)
             consumer = StatisticsConsumer(statistics=_MultiStatistics)
