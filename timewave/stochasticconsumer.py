@@ -1,8 +1,7 @@
 from math import sqrt
-from random import Random, sample
+from random import sample
 
 from consumers import TransposedConsumer
-from stochasticprocess import StochasticProcess
 
 
 # statistics and stochastic process consumers
@@ -13,6 +12,9 @@ class _Statistics(object):
     calculate basic statistics for a 1 dim empirical sample
     """
     _available = 'count', 'mean', 'stdev', 'variance', 'skewness', 'kurtosis', 'median', 'min', 'max'
+
+    def get(self, item, default=None):
+        return getattr(self, item, default)
 
     def keys(self):
         return self._available
@@ -44,26 +46,10 @@ class _Statistics(object):
         self.box = [sps[0], sps[p[25]], sps[p[50]], sps[p[75]], sps[-1]]
         self.percentile = [sps[int(i)] for i in p]
         self.sample = data
-        self.expected = self.get_expected(expected)
-
-    @classmethod
-    def get_expected(cls, expected):
-        # search for process, time tuple
-        if isinstance(expected, tuple):
-            process, time = expected
-        elif isinstance(expected, StochasticProcess):
-            process, time = expected, 1.
-        elif isinstance(expected, dict):
-            process, time = expected.get('process'), expected.get('time', 1.)
-        else:
-            process, time = None, None
-        # use expected moments from process
-        if process and time:
-            expected = dict()
-            for k in cls._available:
-                if hasattr(process, k):
-                    expected[k] = getattr(process, k)(time)
-        return expected
+        process, time = expected.get('process'), expected.get('time', 1.)
+        if process:
+            expected.update(dict((k, getattr(process, k)(time)) for k in self._available if hasattr(process, k)))
+        self.expected = expected
 
     @staticmethod
     def _moment(data, degree=1, mean=0.):
@@ -78,22 +64,22 @@ class _Statistics(object):
     def __getitem__(self, item):
         return getattr(self, item)
 
+    def __repr__(self):
+        return '\n' + str(self)
+
     def __str__(self):
         f = (lambda v: '%0.8f' % v if isinstance(v, (int, float)) else '')
         keys, values = self.keys(), map(f, self.values())
-        mk = max(map(len, keys))
-        mv = max(map(len, values))
+        mk, mv = max(map(len, keys)), max(map(len, values))
         res = [a.ljust(mk) + ' : ' + v.rjust(mv) for a, v in zip(keys, values)]
 
         if self.expected:
-            expected = self.get_expected(self.expected)
-            # build str from standard expected dict
             for l, k in enumerate(self.keys()):
-                if k in expected:
-                    e, v = expected[k], getattr(self, k)
-
+                if k in self.expected:
+                    e, v = self.expected[k], getattr(self, k)
+                    # diff v - e
                     res[l] += ' - ' + ('%0.8f' % e).rjust(mv) + ' = ' + ('%0.8f' % (v - e)).rjust(mv)
-                    if e:
+                    if e:  # rel diff if non zero e
                         res[l] += '  (' + ('%+0.3f' % (100. * (v - e) / e)).rjust(mv) + ' %)'
 
         res = [self.__class__.__name__ + '(' + self.description + ')'] + res
@@ -105,7 +91,7 @@ class _MetaStatistics(list):
 
     def __init__(self, iterable, **expected):
         super(_MetaStatistics, self).__init__(iterable)
-        self.expected = _Statistics.get_expected(expected)
+        self.expected = expected
 
     def keys(self):
         return self.__class__._available
@@ -119,16 +105,7 @@ class _MetaStatistics(list):
         for s in self:
             for k in keys:
                 data[k].append(getattr(s, k))
-
-        self.expected = _Statistics.get_expected(self.expected)
-        res = list()
-        for k in keys:
-            if k in self.expected:
-                s = _Statistics(data[k], description=k, mean=self.expected.get(k))
-            else:
-                s = _Statistics(data[k], description=k)
-            res.append((k, s))
-        return res
+        return list((k, data[k]) for k in self.keys())
 
 
 class _BootstrapStatistics(_MetaStatistics):
@@ -137,19 +114,42 @@ class _BootstrapStatistics(_MetaStatistics):
         # Jack knife n*(n-1)
         # bootstrap n*(n-1), (n-1)*(n-2), ...
         statistics = _Statistics if statistics is None else statistics
-        d = expected.get('description', '')
+        if not expected:
+            expected = dict(statistics(data).items())
+        self.sample = data
         k = int(float(len(data)) * sample_len)
-        iterable = (statistics(sample(data, k), description='%d-%s' %(i,d), **expected) for i in range(sample_num))
+        p = str(expected.get('process', ''))
+        iterable = (statistics(sample(data, k), description='%s(%d)' % (p,i), **expected) for i in range(sample_num))
         super(_BootstrapStatistics, self).__init__(iterable, **expected)
+
+    def items(self):
+        expected = self.expected
+        process, time = expected.get('process'), expected.get('time', 1.)
+        if process:
+            expected.update(dict((k, getattr(process, k)(time)) for k in self._available if hasattr(process, k)))
+
+        res = list()
+        for k, v in super(_BootstrapStatistics, self).items():
+            p = str(expected.get('process', ''))
+            d = '%s[%s]' % (p, k)
+            if k in expected:
+                s = _Statistics(v, description=d, mean=expected.get(k))
+            else:
+                s = _Statistics(v, description=d)
+            res.append((k, s))
+        return res
 
 
 class _ConvergenceStatistics(_MetaStatistics):
     def __init__(self, data, statistics=None, sample_num=10, **expected):
         # convergence [:1] -> [:n]
         statistics = _Statistics if statistics is None else statistics
-        d = expected.get('description', '')
+        if not expected:
+            expected = dict(statistics(data).items())
+        self.sample = data
         k = int(len(data)/sample_num)
-        iterable = ((statistics(data[:i+k], description='%s[0:%d]'%(d,i+k), **expected)) for i in range(0, len(data), k))
+        p = str(expected.get('process', ''))
+        iterable = ((statistics(data[:i+k], description='%s[0:%d]' % (p,i+k), **expected)) for i in range(0, len(data), k))
         super(_ConvergenceStatistics, self).__init__(iterable, **expected)
 
 

@@ -8,37 +8,39 @@ from timewave import GaussEvolutionProducer, StatisticsConsumer, Engine
 from timewave.stochasticconsumer import _MultiStatistics, _Statistics, _BootstrapStatistics, _ConvergenceStatistics
 from timewave import GeometricBrownianMotion, WienerProcess, TimeDependentGeometricBrownianMotion
 
-if False:
+if True:
     rnd = Random()
     seed = rnd.randint(0, 1000)
     rnd.seed(seed)
 
-    n, start, drift, vol, time = int(1001), 1., .1, .5, 1.
-    l, p = (lambda qq, q: start + drift * time + vol * sqrt(time) * q), WienerProcess(drift, vol, start)
-    l, p = (lambda qq, q: start * exp(drift * time + vol * sqrt(time) * q)), GeometricBrownianMotion(drift, vol, start)
-    l, p = (lambda qq, q: start * exp(drift * time + vol * sqrt(time) * q)), TimeDependentGeometricBrownianMotion(drift, vol, start)
+    num, start, drift, vol, time = int(1001), 1., .1, .5, 1.
+    normal = (lambda qq, q: start + drift * time + vol * sqrt(time) * q)
+    log_normal = (lambda qq, q: start * exp(drift * time + vol * sqrt(time) * q))
+    func, process = normal, WienerProcess(drift, vol, start)
+    func, process = log_normal, GeometricBrownianMotion(drift, vol, start)
+    func, process = log_normal, TimeDependentGeometricBrownianMotion(drift, vol, start)
 
-    r = Engine(GaussEvolutionProducer(p), StatisticsConsumer()).run(grid=[0., time], num_of_paths=n)[-1][-1]
-
-    r.description = 'engine vs expected (seed %d)' % seed
-    r.expected = p, time
+    c = StatisticsConsumer(description=str(process) + '(seed %d)' % seed, process=process, time=time)
+    r = Engine(GaussEvolutionProducer(process), c).run(grid=[0., time], num_of_paths=num)[-1][-1]
     print r
 
     r.description = 'engine vs sample (seed %d)' % seed
-    r.expected = _Statistics([l(rnd.gauss(0., 1.), rnd.gauss(0., 1.)) for _ in range(n)])
+    r.expected = dict(_Statistics([func(rnd.gauss(0., 1.), rnd.gauss(0., 1.)) for _ in range(num)]).items())
     print r
-
 
 if True:
     start, drift, vol, time = 1., 0.1, .5, 1.
-    statistics = _BootstrapStatistics
-    statistics = _ConvergenceStatistics
-
     process = TimeDependentGeometricBrownianMotion(drift, vol, start)
-    e = Engine(GaussEvolutionProducer(process), StatisticsConsumer(statistics=statistics, process=process))
-    r = e.run(grid=[0., time], num_of_paths=10000, num_of_workers=None)[-1][-1]
-    for b in r:
-        print b
+    e = Engine(GaussEvolutionProducer(process), StatisticsConsumer(statistics=_BootstrapStatistics, process=process))
+    r = e.run(grid=[0., time], num_of_paths=1000, num_of_workers=None)[-1][-1]
+    print r.values()
+
+if True:
+    start, drift, vol, time = 1., 0.1, .5, 1.
+    process = TimeDependentGeometricBrownianMotion(drift, vol, start)
+    e = Engine(GaussEvolutionProducer(process), StatisticsConsumer(statistics=_ConvergenceStatistics))
+    r = e.run(grid=[0., time], num_of_paths=1000, num_of_workers=None)[-1][-1]
+    print r
 
 if False:
     start, drift, vol, time = 1., 0.1, .5, 1.
