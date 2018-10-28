@@ -100,11 +100,15 @@ class _Statistics(object):
         return '\n'.join(res)
 
 
-class _BootstrapStatistics(list):
+class _MetaStatistics(list):
     _available = 'mean', 'stdev', 'variance', 'skewness', 'kurtosis', 'median'
 
+    def __init__(self, iterable, **expected):
+        super(_MetaStatistics, self).__init__(iterable)
+        self.expected = _Statistics.get_expected(expected)
+
     def keys(self):
-        return _BootstrapStatistics._available
+        return self.__class__._available
 
     def values(self):
         return list(v for k, v in self.items())
@@ -126,27 +130,30 @@ class _BootstrapStatistics(list):
             res.append((k, s))
         return res
 
+
+class _BootstrapStatistics(_MetaStatistics):
+
     def __init__(self, data, statistics=None, sample_len=0.5, sample_num=100, **expected):
         # Jack knife n*(n-1)
         # bootstrap n*(n-1), (n-1)*(n-2), ...
-        self._statistics = _Statistics if statistics is None else statistics
-        self.expected = _Statistics.get_expected(expected)
-
+        statistics = _Statistics if statistics is None else statistics
+        d = expected.get('description', '')
         k = int(float(len(data)) * sample_len)
-        iterable = (self._statistics(sample(data, k), description=str(_)) for _ in range(sample_num))
-        super(_BootstrapStatistics, self).__init__(iterable)
+        iterable = (statistics(sample(data, k), description='%d-%s' %(i,d), **expected) for i in range(sample_num))
+        super(_BootstrapStatistics, self).__init__(iterable, **expected)
 
 
-class _ConvergenceStatistics(object):
-    def __init__(self, data, statistics=None, **expected):
+class _ConvergenceStatistics(_MetaStatistics):
+    def __init__(self, data, statistics=None, sample_num=10, **expected):
         # convergence [:1] -> [:n]
-        pass
+        statistics = _Statistics if statistics is None else statistics
+        d = expected.get('description', '')
+        k = int(len(data)/sample_num)
+        iterable = ((statistics(data[:i+k], description='%s[0:%d]'%(d,i+k), **expected)) for i in range(0, len(data), k))
+        super(_ConvergenceStatistics, self).__init__(iterable, **expected)
 
 
-class _ValidationStatistics(object):
-    def __init__(self, data, statistics=None, **expected):
-        # 60:40 validation test
-        pass
+# todo class _ValidationStatistics(object): # 60:40 validation test
 
 
 class _MultiStatistics(object):
@@ -168,10 +175,11 @@ class StatisticsConsumer(TransposedConsumer):
     run basic statistics on storage consumer result per time slice
     """
 
-    def __init__(self, func=None, statistics=None):
+    def __init__(self, func=None, statistics=None, **kwargs):
         if statistics is None:
             statistics = _Statistics
         self.statistics = statistics
+        self.kwargs = kwargs
         super(StatisticsConsumer, self).__init__(func)
 
     def finalize(self):
@@ -179,8 +187,10 @@ class StatisticsConsumer(TransposedConsumer):
         super(StatisticsConsumer, self).finalize()
         # run statistics on timewave slice w at grid point g
         # self.result = [(g, self.statistics(w)) for g, w in zip(self.grid, self.result)]
-        # self.result = zip(self.grid, (self.statistics(w) for w in self.result))
-        self.result = zip(self.grid, map(self.statistics, self.result))
+        if self.kwargs:
+            self.result = zip(self.grid, (self.statistics(w, **self.kwargs) for w in self.result))
+        else:
+            self.result = zip(self.grid, map(self.statistics, self.result))
 
 
 class StochasticProcessStatisticsConsumer(StatisticsConsumer):

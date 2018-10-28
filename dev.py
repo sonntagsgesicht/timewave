@@ -5,7 +5,7 @@ from random import Random
 from test import MultiGaussEvolutionProducerUnitTests
 from timewave import FiniteStateMarkovChain, AugmentedFiniteStateMarkovChain
 from timewave import GaussEvolutionProducer, StatisticsConsumer, Engine
-from timewave.stochasticconsumer import _MultiStatistics, _Statistics, _BootstrapStatistics
+from timewave.stochasticconsumer import _MultiStatistics, _Statistics, _BootstrapStatistics, _ConvergenceStatistics
 from timewave import GeometricBrownianMotion, WienerProcess, TimeDependentGeometricBrownianMotion
 
 if False:
@@ -31,15 +31,13 @@ if False:
 
 if True:
     start, drift, vol, time = 1., 0.1, .5, 1.
+    statistics = _BootstrapStatistics
+    statistics = _ConvergenceStatistics
 
     process = TimeDependentGeometricBrownianMotion(drift, vol, start)
-    e = Engine(GaussEvolutionProducer(process), StatisticsConsumer(statistics=_BootstrapStatistics))
-    r = e.run(grid=[0., time], num_of_paths=100000, num_of_workers=None)[-1][-1]
-    r.expected = process
-    # for s in r:
-    #     print s
-
-    for b in r.values():
+    e = Engine(GaussEvolutionProducer(process), StatisticsConsumer(statistics=statistics, process=process))
+    r = e.run(grid=[0., time], num_of_paths=10000, num_of_workers=None)[-1][-1]
+    for b in r:
         print b
 
 if False:
