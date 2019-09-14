@@ -1,44 +1,53 @@
 # -*- coding: utf-8 -*-
 
-#  timewave
-#  ------------
-#  timewave, a classical time evolution simulation engine in python.
-#
-#  Author:  pbrisk <pbrisk_at_github@icloud.com>
-#  Copyright: 2016, 2017 Deutsche Postbank AG
-#  Website: https://github.com/pbrisk/timewave
-#  License: APACHE Version 2 License (see LICENSE file)
+# timewave
+# --------
+# timewave, a stochastic process evolution simulation engine in python.
+# 
+# Author:   sonntagsgesicht, based on a fork of Deutsche Postbank [pbrisk]
+# Version:  0.5, copyright Saturday, 14 September 2019
+# Website:  https://github.com/sonntagsgesicht/timewave
+# License:  Apache License 2.0 (see LICENSE file)
 
 
 import codecs
+
 try:
-    from setuptools import setup
+    from setuptools import setup, find_packages
 except ImportError:
     from distutils.core import setup
 
+pkg = __import__('timewave')
 
 setup(
-    name='timewave',
-    description='timewave, a stochastic process evolution simulation engine in python.',
-    version='0.5',
-    author='Deutsche Postbank AG [pbrisk]',
-    author_email='pbrisk_at_github@icloud.com',
-    url='https://github.com/pbrisk/timewave',
-    license='Apache License 2.0',
-    packages=['timewave', 'timewave/stochasticprocess'],
-    install_requires=['dill','numpy','scipy','matplotlib'],
-    long_description=codecs.open('README.rst', encoding='utf-8').read(),
+    name=pkg.__name__,
+    description=pkg.__doc__,
+    version=pkg.__version__,
+    author=pkg.__author__,
+    author_email=pkg.__email__,
+    url=pkg.__url__,
+    license=pkg.__license__,
+    packages=(pkg.__name__,),
+    package_data={pkg.__name__: list(pkg.__data__)},
+    scripts=pkg.__scripts__,
+    install_requires=pkg.__dependencies__,
+    dependency_links=pkg.__dependency_links__,
+    long_description='\n'+codecs.open('README.rst', encoding='utf-8').read(),
     platforms='any',
     classifiers=[
-        'Development Status :: 3 - Alpha',
-        'Intended Audience :: Developers',
+        'Development Status :: ' + pkg.__dev_status__,
         'Intended Audience :: Education',
+        'Intended Audience :: Developers',
         'Intended Audience :: Financial and Insurance Industry',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Education',
         'Topic :: Office/Business',
         'Topic :: Office/Business :: Financial',
@@ -47,6 +56,6 @@ setup(
         'Topic :: Utilities',
         'Topic :: Office/Business :: Scheduling',
         'Topic :: Software Development :: Libraries :: Python Modules',
-        'Topic :: Software Development :: Localization',
-    ]
+    ],
 )
+

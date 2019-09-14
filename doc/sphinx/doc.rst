@@ -4,6 +4,7 @@ API Documentation
 -----------------
 
 .. toctree::
+    :glob:
 
 
 Timewave Engine
