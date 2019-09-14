@@ -13,20 +13,51 @@ try:
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import axes3d
     from matplotlib import cm
+
+    def plot_consumer_result(result, grid=None, title='', path=None):
+        for l in result:
+            plt.plot(grid, l)
+        plt.title(title)
+        plt.xlabel("time, $t$")
+        plt.ylabel("position of process")
+        if path:
+            plt.savefig(path + sep + title + '.pdf')
+            plt.close()
+
+
+    def plot_timewave_result(result, title='', path=None):
+        # Plot a basic wireframe.
+        x, y, z = result
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.plot_trisurf(x, y, z, linewidth=0.2, antialiased=True, cmap=cm.coolwarm)
+        plt.title(title)
+        if path:
+            plt.savefig(path + sep + title + '.pdf')
+            plt.close()
+
 except ImportError:
     print('timewave graphics not available due to ImportError importing matplotlib.pyplot')
+
+    def plot_consumer_result(*args):
+        pass
+
+
+    def plot_timewave_result(*args):
+        pass
+
 
 from timewave.engine import Engine, Producer, Consumer
 from timewave.producers import MultiProducer, DeterministicProducer, StringReaderProducer
 from timewave.consumers import TransposedConsumer, ConsumerConsumer, MultiConsumer, StringWriterConsumer
-from timewave.stochasticprocess.gauss import WienerProcess, OrnsteinUhlenbeckProcess, GeometricBrownianMotion
+from timewave.stochasticprocess.gauss import WienerProcess, OrnsteinUhlenbeckProcess, GeometricBrownianMotion, \
+    TimeDependentWienerProcess, TimeDependentGeometricBrownianMotion
 from timewave.stochasticprocess.multifactor import SABR, MultiGauss
 from timewave.stochasticprocess.markovchain import FiniteStateMarkovChain, FiniteStateInhomogeneousMarkovChain, \
-    FiniteStateContinuousTimeMarkovChain, FiniteStateAugmentedMarkovChain
+    FiniteStateContinuousTimeMarkovChain, AugmentedFiniteStateMarkovChain
 from timewave.stochasticproducer import GaussEvolutionProducer, MultiGaussEvolutionProducer
 from timewave.stochasticconsumer import StatisticsConsumer, StochasticProcessStatisticsConsumer, TimeWaveConsumer, \
-    _MultiStatistics, _Statistics
-from timewave.plot import plot_consumer_result, plot_timewave_result
+    _MultiStatistics
 
 PROFILING = False
 
@@ -257,7 +288,7 @@ class MultiProducerUnitTests(unittest.TestCase):
 
 class GaussEvolutionProducerUnitTests(unittest.TestCase):
     def setUp(self):
-        self.places = 0
+        self.places = 3
         self.path = 5000
         self.grid = range(20)
         self.process = WienerProcess(.0, .0001)
@@ -298,9 +329,77 @@ class OrnsteinUhlenbeckProcessUnitTests(GaussEvolutionProducerUnitTests):
 class GeometricBrownianMotionUnitTests(GaussEvolutionProducerUnitTests):
     def setUp(self):
         super(GeometricBrownianMotionUnitTests, self).setUp()
-        self.places = 0
+        self.places = 3
         self.grid = range(20)
         self.process = GeometricBrownianMotion(.1, .01, 0.1)
+
+    def test_mean(self):
+        start, drift, vol, time = 1., 0.1, 0.1, 1.
+        expected = start * exp((drift + 0.5 * vol ** 2) * time)
+        process = GeometricBrownianMotion(drift, vol, start)
+        e = Engine(GaussEvolutionProducer(process), StatisticsConsumer())
+        mean = list()
+        median = list()
+        variance = list()
+        for seed in range(100):
+            d, r = e.run(grid=[0., time], seed=seed)[-1]
+            mean.append(r.mean)
+            median.append(r.median)
+            variance.append(r.variance)
+        self.assertTrue(min(mean) <= expected <= max(mean))
+        self.assertTrue(min(median) <= expected <= max(median))
+        self.assertTrue(min(mean) <= process.mean(time) <= max(mean))
+        self.assertTrue(min(variance) <= process.variance(time) <= max(variance))
+
+
+class TermWienerProcessUnitTests(GaussEvolutionProducerUnitTests):
+    def setUp(self):
+        super(TermWienerProcessUnitTests, self).setUp()
+        self.places = 0
+        self.grid = range(10)
+        self.process = TimeDependentWienerProcess([0., 0.5, -0.5, 0.], [1., .5, 0.5, 0.3], [0., 3., 5., 7.])
+
+    def test_compare(self):
+
+        process = WienerProcess()
+        for g in self.grid:
+            self.assertAlmostEqual(process.mean(g), process._mu * g)
+            self.assertAlmostEqual(process.variance(g), process._sigma ** 2 * g)
+
+        term_process = TimeDependentWienerProcess()
+        for g in self.grid:
+            self.assertAlmostEqual(process.mean(g), term_process.mean(g))
+            self.assertAlmostEqual(process.variance(g), term_process.variance(g))
+
+        term_process = TimeDependentWienerProcess([0.] * 5, [1.] * 5)
+        for g in self.grid:
+            self.assertAlmostEqual(process.mean(g), term_process.mean(g))
+            self.assertAlmostEqual(process.variance(g), term_process.variance(g))
+
+
+class TimeDependentGeometricBrownianMotionUnitTests(TermWienerProcessUnitTests):
+    def setUp(self):
+        super(TimeDependentGeometricBrownianMotionUnitTests, self).setUp()
+        self.places = 0
+        self.grid = range(10)
+        self.process = TimeDependentGeometricBrownianMotion([0., 0.05, -0.05, 0.], [0.1, .005, 0.2, 0.12],
+                                                            [0., 3., 5., 10.])
+
+    def test_compare(self):
+        process = GeometricBrownianMotion(mu=0.01, sigma=0.01)
+        for g in self.grid:
+            self.assertAlmostEqual(process.mean(g), exp(process._mu * g + 0.5 * process._sigma ** 2 * g))
+            self.assertAlmostEqual(process.variance(g), process.mean(g) ** 2 * (exp(process._sigma ** 2 * g) - 1))
+
+        term_process = TimeDependentGeometricBrownianMotion(mu=(0.01,), sigma=(0.01,))
+        for g in self.grid:
+            self.assertAlmostEqual(process.mean(g), term_process.mean(g))
+            self.assertAlmostEqual(process.variance(g), term_process.variance(g))
+
+        term_process = TimeDependentGeometricBrownianMotion([0.01] * 5, [0.01] * 5)
+        for g in self.grid:
+            self.assertAlmostEqual(process.mean(g), term_process.mean(g))
+            self.assertAlmostEqual(process.variance(g), term_process.variance(g))
 
 
 # --- MarkovChainEvolutionProducerUnitTests
@@ -326,7 +425,7 @@ class MarkovChainEvolutionProducerUnitTests(unittest.TestCase):
                 self.assertAlmostEqual(pv, sv, self.places)
 
     def test_random_statistics(self):
-        for d in range(2, 10, 2):
+        for d in range(2, 4, 2):
             process = self.process.__class__.random(d)
             producer = GaussEvolutionProducer(process)
             consumer = StatisticsConsumer(statistics=_MultiStatistics)
@@ -407,12 +506,13 @@ class InhomogeneousMarkovChainEvolutionProducerUnitTests(MarkovChainEvolutionPro
 
 
 class AugmentedMarkovChainEvolutionProducerUnitTests(GaussEvolutionProducerUnitTests):
+    _underlying_class = FiniteStateMarkovChain
+
     def setUp(self):
         super(AugmentedMarkovChainEvolutionProducerUnitTests, self).setUp()
         self.places = 1
         self.path = 5000
         self.grid = range(10)
-        weights = (lambda x: 1. if x == 3 else 0.)
         transition = [
             [0.7, 0.2, 0.099, 0.001],
             [0.2, 0.5, 0.29, 0.01],
@@ -420,8 +520,28 @@ class AugmentedMarkovChainEvolutionProducerUnitTests(GaussEvolutionProducerUnitT
             [0.0, 0.0, 0.0, 1.0]]
         r_squared = 1.0
         start = [.3, .2, .5, 0.]
-        self.process = FiniteStateAugmentedMarkovChain(transition, r_squared, weights, start)
+        self.underlying = self._underlying_class(transition, r_squared, start)
+        augmentation = (lambda x: 1. if x == 3 else 0.)
+        augmentation = [0., 0., 0., 1.]
+        self.process = AugmentedFiniteStateMarkovChain(self.underlying, augmentation)
         self.eval = self.process.eval
+
+    def test_start(self):
+        self.assertEqual(self.process.start, self.underlying.start)
+
+        start = [1., 1., 1., 1.]
+        self.process.start = start
+        self.assertEqual(self.process.start, self.underlying.start)
+        self.assertEqual(start, self.underlying.start)
+
+        start = [2., 2., 2., 2.]
+        self.underlying.start = start
+        self.assertEqual(self.process.start, self.underlying.start)
+        self.assertEqual(start, self.underlying.start)
+
+
+class ContinuousAugmentedMarkovChainEvolutionProducerUnitTests(AugmentedMarkovChainEvolutionProducerUnitTests):
+    _underlying_class = FiniteStateContinuousTimeMarkovChain
 
 
 # --- MultiGaussEvolutionProducerUnitTests ---
@@ -515,16 +635,17 @@ class MultiGaussEvolutionProducerUnitTests(unittest.TestCase):
 class SabrUnitTests(unittest.TestCase):
     def setUp(self):
         super(SabrUnitTests, self).setUp()
-        self.places = 0
-        self.grid = range(20)
+        self.places = 0  # fixme this is not a real test!
+        self.grid = range(10)
         self.process = SABR()
 
     def test_statistics(self):
         producer = GaussEvolutionProducer(self.process)
         consumer = StatisticsConsumer(lambda s: s.value[0])
-        stats = Engine(producer, consumer).run(self.grid, 5000)
+        stats = Engine(producer, consumer).run(self.grid, 50000)
 
         for p, s in stats:
+            # print p, self.process.mean(p), self.process.variance(p), '\n', s
             self.assertAlmostEqual(self.process.mean(p), s.mean, self.places)
             self.assertAlmostEqual(self.process.mean(p), s.median, self.places)
             self.assertAlmostEqual(self.process.variance(p), s.variance, self.places)

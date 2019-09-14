@@ -21,6 +21,7 @@ class Producer(object):
     """
 
     def __init__(self, func=None, initial_state=None):
+        super(Producer, self).__init__()
         if func is None:
             func = (lambda s, d: s.value)
         self.func = func
@@ -46,13 +47,16 @@ class Producer(object):
     def initialize_worker(self, process_num=None):
         """ inits producer for a simulation run on a single process """
         self.initial_state.process = process_num
-        self.random.seed(hash(self.seed) + hash(process_num))
+        seed = self.seed if process_num is None else hash(self.seed) + hash(process_num)
+        seed = self.seed if process_num is None else self.seed + process_num
+        self.random.seed(seed)
 
     def initialize_path(self, path_num=None):
         """ inits producer for next path, i.e. sets current state to initial state"""
         self.state = copy(self.initial_state)
         self.state.path = path_num
-        self.random.seed(hash(self.seed) + hash(path_num))
+        # seed = self.seed if path_num is None else hash(self.seed) + hash(path_num)
+        # self.random.seed(seed)
 
     def evolve(self, new_date):
         """
@@ -87,6 +91,7 @@ class Engine(object):
     """
 
     def __init__(self, producer=None, consumer=None):
+        super(Engine, self).__init__()
 
         assert isinstance(producer, Producer) and isinstance(consumer, Consumer)
         self.producer = producer
@@ -219,6 +224,7 @@ class Consumer(object):
 
         :type func: callable
         """
+        super(Consumer, self).__init__()
         if func is None:
             func = (lambda s: s.value)
         self.func = func
