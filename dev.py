@@ -9,6 +9,52 @@ from timewave.stochasticconsumer import _MultiStatistics, _Statistics, _Bootstra
 from timewave import GeometricBrownianMotion, WienerProcess, TimeDependentGeometricBrownianMotion
 
 if True:
+    from os import system, getcwd, sep, makedirs, path
+    from timewave import TimeWaveConsumer, OrnsteinUhlenbeckProcess
+
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import axes3d
+    from matplotlib import cm
+
+    def plot_timewave_result(result, title='', path=None):
+        # Plot a basic wireframe.
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.plot_trisurf(x, y, z, linewidth=0.2, antialiased=True, cmap=cm.coolwarm)
+        ax.bar([0], [.1], zs=0., zdir='y', alpha=0.8)
+        plt.title(title)
+        if path:
+            print 'save to', path + sep + title + '.pdf'
+            plt.savefig(path + sep + title + '.pdf')
+            plt.close()
+
+    grid = range(50)
+    process = GeometricBrownianMotion(.05, .05, 0.1)
+    process = OrnsteinUhlenbeckProcess(.01, .2, .4, 1.)
+
+    producer = GaussEvolutionProducer(process)
+    consumer = TimeWaveConsumer(lambda s: s.value)
+    Engine(producer, consumer).run(grid, 100000)
+
+    x, y, z = consumer.result
+    z = map(lambda x: min(x, .2), z)
+
+    title = str(process)
+    path='.'
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.bar(grid, [.005]*len(grid), zs=-3., zdir='y', color='r', width=1.)
+    ax.plot_trisurf(x, y, z, linewidth=0.2, antialiased=True, cmap=cm.coolwarm)
+    plt.title(title)
+    if path:
+        print 'save to', path + sep + title + '.pdf'
+        plt.savefig(path + sep + title + '.pdf')
+        plt.close()
+
+
+if False:
     rnd = Random()
     seed = rnd.randint(0, 1000)
     rnd.seed(seed)
@@ -28,14 +74,14 @@ if True:
     r.expected = dict(_Statistics([func(rnd.gauss(0., 1.), rnd.gauss(0., 1.)) for _ in range(num)]).items())
     print r
 
-if True:
+if False:
     start, drift, vol, time = 1., 0.1, .5, 1.
     process = TimeDependentGeometricBrownianMotion(drift, vol, start)
     e = Engine(GaussEvolutionProducer(process), StatisticsConsumer(statistics=_BootstrapStatistics, process=process))
     r = e.run(grid=[0., time], num_of_paths=1000, num_of_workers=None)[-1][-1]
     print r.values()
 
-if True:
+if False:
     start, drift, vol, time = 1., 0.1, .5, 1.
     process = TimeDependentGeometricBrownianMotion(drift, vol, start)
     e = Engine(GaussEvolutionProducer(process), StatisticsConsumer(statistics=_ConvergenceStatistics))
