@@ -18,7 +18,7 @@ import numpy as np
 from scipy.stats import norm
 from scipy.linalg import expm, logm
 
-from base import StochasticProcess
+from .base import StochasticProcess
 
 EPS = 1e-7
 

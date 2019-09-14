@@ -140,7 +140,7 @@ class GeometricBrownianMotionProducer(Producer):
 
 class DeterministicProducerTests(unittest.TestCase):
     def test_deterministic_producer(self):
-        grid = range(100)
+        grid = list(range(100))
         num_of_paths = 5000
         sample = [[float(i) / float(j + 1) for j in grid] for i in range(num_of_paths)]
         p = DeterministicProducer(sample)
@@ -150,7 +150,7 @@ class DeterministicProducerTests(unittest.TestCase):
                 self.assertEqual(x, y)
 
     def test_string_producer(self):
-        grid = range(100)
+        grid = list(range(100))
         num_of_paths = 5000
         sample = [[float(i) / float(j + 1) for j in grid] for i in range(num_of_paths)]
 
@@ -175,7 +175,7 @@ class BrownianMotionProducerUnitTests(unittest.TestCase):
         """
         producer = WienerProcessProducer()
         consumer = Consumer()
-        Engine(producer, consumer).run(range(0, 20), 100)
+        Engine(producer, consumer).run(list(range(0, 20)), 100)
         plot_consumer_result(consumer.result, consumer.grid, '2d-Wiener', '.' + sep + 'pdf')
 
     def test_brownian_motion_timwave_plot(self):
@@ -185,7 +185,7 @@ class BrownianMotionProducerUnitTests(unittest.TestCase):
         """
         producer = WienerProcessProducer()
         consumer = TimeWaveConsumer()
-        Engine(producer, consumer).run(range(0, 100), 1000)
+        Engine(producer, consumer).run(list(range(0, 100)), 1000)
         plot_timewave_result(consumer.result, '3d-Wiener', '.' + sep + 'pdf')
 
     def test_brownian_motion_statistics(self):
@@ -195,7 +195,7 @@ class BrownianMotionProducerUnitTests(unittest.TestCase):
         """
         producer = WienerProcessProducer()
         consumer = ConsumerConsumer(StatisticsConsumer(), StochasticProcessStatisticsConsumer())
-        stats, (_, t) = Engine(producer, consumer).run(range(0, 20), 5000, profiling=PROFILING)
+        stats, (_, t) = Engine(producer, consumer).run(list(range(0, 20)), 5000, profiling=PROFILING)
 
         for p, s in stats:
             self.assertAlmostEqual(0.0, s.mean, 0)
@@ -212,7 +212,7 @@ class BrownianMotionProducerUnitTests(unittest.TestCase):
         """
         producer = WienerProcessProducer()
         consumer = TransposedConsumer()
-        waves = Engine(producer, consumer).run(range(0, 20), 5000, profiling=PROFILING)
+        waves = Engine(producer, consumer).run(list(range(0, 20)), 5000, profiling=PROFILING)
 
         # check that on average there is no movement
         for g, w in enumerate(waves):
@@ -230,7 +230,7 @@ class GeometricBrownianMotionProducerUnitTests(unittest.TestCase):
         """
         producer = GeometricBrownianMotionProducer(.05, .05)
         consumer = Consumer()
-        Engine(producer, consumer).run(range(0, 20), 100)
+        Engine(producer, consumer).run(list(range(0, 20)), 100)
         plot_consumer_result(consumer.result, consumer.grid, '2d-GBM', '.' + sep + 'pdf')
 
     def test_geometric_brownian_motion_timwave_plot(self):
@@ -240,7 +240,7 @@ class GeometricBrownianMotionProducerUnitTests(unittest.TestCase):
         """
         producer = GeometricBrownianMotionProducer(.01, .01)
         consumer = TimeWaveConsumer()
-        Engine(producer, consumer).run(range(0, 50), 5000)
+        Engine(producer, consumer).run(list(range(0, 50)), 5000)
         plot_timewave_result(consumer.result, '3d-GBM', '.' + sep + 'pdf')
 
     def test_geometric_brownian_motion_statistics(self):
@@ -255,7 +255,7 @@ class GeometricBrownianMotionProducerUnitTests(unittest.TestCase):
 
         producer = GeometricBrownianMotionProducer(mu, sigma)
         consumer = ConsumerConsumer(StatisticsConsumer(), StochasticProcessStatisticsConsumer(), Consumer())
-        stats, _, paths = Engine(producer, consumer).run(range(0, 100), 500)
+        stats, _, paths = Engine(producer, consumer).run(list(range(0, 100)), 500)
 
         # check that on average there is alright
         for p, s in stats:
@@ -275,7 +275,7 @@ class GeometricBrownianMotionProducerUnitTests(unittest.TestCase):
 
         producer = GeometricBrownianMotionProducer(mu, sigma)
         consumer = TransposedConsumer()
-        waves = Engine(producer, consumer).run(range(0, 100), 5000)
+        waves = Engine(producer, consumer).run(list(range(0, 100)), 5000)
 
         # check that on average there is no movement
         for g, w in enumerate(waves):
@@ -292,7 +292,7 @@ class MultiProducerUnitTests(unittest.TestCase):
         shift = 1.
         producer = MultiProducer(WienerProcessProducer(), WienerProcessProducer(shift))
         consumer = MultiConsumer(TransposedConsumer(), TransposedConsumer())
-        first, second = Engine(producer, consumer).run(range(0, 20), 500, num_of_workers=None)
+        first, second = Engine(producer, consumer).run(list(range(0, 20)), 500, num_of_workers=None)
         for i in range(len(first)):
             for x, y in zip(first[i], second[i]):
                 self.assertAlmostEqual(x, y - shift * i)
@@ -304,7 +304,7 @@ class GaussEvolutionProducerUnitTests(unittest.TestCase):
     def setUp(self):
         self.places = 3
         self.path = 5000
-        self.grid = range(20)
+        self.grid = list(range(20))
         self.process = WienerProcess(.0, .0001)
         self.eval = (lambda s: s.value)
 
@@ -335,7 +335,7 @@ class OrnsteinUhlenbeckProcessUnitTests(GaussEvolutionProducerUnitTests):
     def setUp(self):
         super(OrnsteinUhlenbeckProcessUnitTests, self).setUp()
         self.places = 2
-        self.grid = range(50)
+        self.grid = list(range(50))
         self.process = OrnsteinUhlenbeckProcess(.1, .02, .02, .1)
         self.process = OrnsteinUhlenbeckProcess(.1, -.1, .05, .1)
 
@@ -344,7 +344,7 @@ class GeometricBrownianMotionUnitTests(GaussEvolutionProducerUnitTests):
     def setUp(self):
         super(GeometricBrownianMotionUnitTests, self).setUp()
         self.places = 3
-        self.grid = range(20)
+        self.grid = list(range(20))
         self.process = GeometricBrownianMotion(.1, .01, 0.1)
 
     def test_mean(self):
@@ -370,7 +370,7 @@ class TermWienerProcessUnitTests(GaussEvolutionProducerUnitTests):
     def setUp(self):
         super(TermWienerProcessUnitTests, self).setUp()
         self.places = 0
-        self.grid = range(10)
+        self.grid = list(range(10))
         self.process = TimeDependentWienerProcess([0., 0.5, -0.5, 0.], [1., .5, 0.5, 0.3], [0., 3., 5., 7.])
 
     def test_compare(self):
@@ -395,7 +395,7 @@ class TimeDependentGeometricBrownianMotionUnitTests(TermWienerProcessUnitTests):
     def setUp(self):
         super(TimeDependentGeometricBrownianMotionUnitTests, self).setUp()
         self.places = 0
-        self.grid = range(10)
+        self.grid = list(range(10))
         self.process = TimeDependentGeometricBrownianMotion([0., 0.05, -0.05, 0.], [0.1, .005, 0.2, 0.12],
                                                             [0., 3., 5., 10.])
 
@@ -423,7 +423,7 @@ class MarkovChainEvolutionProducerUnitTests(unittest.TestCase):
     def setUp(self):
         self.places = 1
         self.path = 5000
-        self.grid = range(10)
+        self.grid = list(range(10))
         s, t = [0.5, 0.5, .0], [[.75, .25, .0], [.25, .5, .25], [.0, .25, .75]]
         self.process = FiniteStateMarkovChain(transition=t, start=s)
 
@@ -495,7 +495,7 @@ class InhomogeneousMarkovChainEvolutionProducerUnitTests(MarkovChainEvolutionPro
             y = process.evolve(y, i, i + 1, q)
             x = self.process.evolve(x, i, i + 1, q)
             for xx, yy in zip(x, y):
-                self.assertAlmostEquals(xx, yy)
+                self.assertAlmostEqual(xx, yy)
 
     def test_evolve_2(self):
         process = FiniteStateMarkovChain(self.process.transition, start=self.process.start)
@@ -516,7 +516,7 @@ class InhomogeneousMarkovChainEvolutionProducerUnitTests(MarkovChainEvolutionPro
             y = process.evolve(y, i + 3, i + 4, q)
             x = self.process.evolve(x, i + 3, i + 4, q)
             for xx, yy in zip(x, y):
-                self.assertAlmostEquals(xx, yy)
+                self.assertAlmostEqual(xx, yy)
 
 
 class AugmentedMarkovChainEvolutionProducerUnitTests(GaussEvolutionProducerUnitTests):
@@ -526,7 +526,7 @@ class AugmentedMarkovChainEvolutionProducerUnitTests(GaussEvolutionProducerUnitT
         super(AugmentedMarkovChainEvolutionProducerUnitTests, self).setUp()
         self.places = 1
         self.path = 5000
-        self.grid = range(10)
+        self.grid = list(range(10))
         transition = [
             [0.7, 0.2, 0.099, 0.001],
             [0.2, 0.5, 0.29, 0.01],
@@ -596,7 +596,7 @@ class MultiGaussEvolutionProducerUnitTests(unittest.TestCase):
 
     def test_wiener_process(self):
         shift = .5
-        grid = range(0, 10)
+        grid = list(range(0, 10))
         r = .8
         producer = MultiGaussEvolutionProducer([WienerProcess(), WienerProcess(shift)], [[1., r], [r, 1.]])
         consumer = MultiConsumer(TransposedConsumer(), TransposedConsumer())
@@ -621,7 +621,7 @@ class MultiGaussEvolutionProducerUnitTests(unittest.TestCase):
         plt.close()
 
     def test_multi_gauss_process(self):
-        grid = range(0, 10)
+        grid = list(range(0, 10))
         r = .9
         producer = GaussEvolutionProducer(MultiGauss([0., 0.], [[1., r], [r, 1.]], [0., 0.]))
         consumer = ConsumerConsumer(TransposedConsumer(lambda s: s.value[0]), TransposedConsumer(lambda s: s.value[1]))
@@ -650,7 +650,7 @@ class SabrUnitTests(unittest.TestCase):
     def setUp(self):
         super(SabrUnitTests, self).setUp()
         self.places = 0  # fixme this is not a real test!
-        self.grid = range(10)
+        self.grid = list(range(10))
         self.process = SABR()
 
     def test_statistics(self):
@@ -688,9 +688,9 @@ if __name__ == "__main__":
     print('')
     print('======================================================================')
     print('')
-    print('run %s' % __file__)
-    print('in %s' % os.getcwd())
-    print('started  at %s' % str(start_time))
+    print(('run %s' % __file__))
+    print(('in %s' % os.getcwd()))
+    print(('started  at %s' % str(start_time)))
     print('')
     print('----------------------------------------------------------------------')
     print('')
@@ -702,10 +702,10 @@ if __name__ == "__main__":
     print('')
     print('======================================================================')
     print('')
-    print('ran %s' % __file__)
-    print('in %s' % os.getcwd())
-    print('started  at %s' % str(start_time))
-    print('finished at %s' % str(datetime.now()))
+    print(('ran %s' % __file__))
+    print(('in %s' % os.getcwd()))
+    print(('started  at %s' % str(start_time)))
+    print(('finished at %s' % str(datetime.now())))
     print('')
     print('----------------------------------------------------------------------')
     print('')

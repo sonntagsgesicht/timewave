@@ -13,8 +13,8 @@
 from math import sqrt, exp, log
 from scipy.linalg import cholesky
 
-from base import MultivariateStochasticProcess
-from gauss import WienerProcess, GeometricBrownianMotion
+from .base import MultivariateStochasticProcess
+from .gauss import WienerProcess, GeometricBrownianMotion
 
 
 class SABR(MultivariateStochasticProcess):

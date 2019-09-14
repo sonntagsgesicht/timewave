@@ -301,7 +301,7 @@ class Consumer(object):
         # todo sort self.result by path_num
         if self.result:
             self.result = sorted(self.result, key=lambda x: x[0])
-            p, r = map(list, zip(*self.result))
+            p, r = list(map(list, list(zip(*self.result))))
             self.result = r
 
     def put(self):

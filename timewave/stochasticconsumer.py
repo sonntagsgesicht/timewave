@@ -13,7 +13,7 @@
 from math import sqrt
 from random import sample
 
-from consumers import TransposedConsumer
+from .consumers import TransposedConsumer
 
 
 # statistics and stochastic process consumers
@@ -32,10 +32,10 @@ class _Statistics(object):
         return self._available
 
     def values(self):
-        return tuple(getattr(self, a, 0.0) for a in self.keys())
+        return tuple(getattr(self, a, 0.0) for a in list(self.keys()))
 
     def items(self):
-        return zip(self.keys(), self.values())
+        return list(zip(list(self.keys()), list(self.values())))
 
     def __init__(self, data, description='', **expected):
         sps = sorted(data)
@@ -68,10 +68,10 @@ class _Statistics(object):
         return sum([(rr - mean) ** degree for rr in data]) / float(len(data))
 
     def __contains__(self, item):
-        return item in self.keys()
+        return item in list(self.keys())
 
     def __iter__(self):
-        return self.keys()
+        return list(self.keys())
 
     def __getitem__(self, item):
         return getattr(self, item)
@@ -81,8 +81,8 @@ class _Statistics(object):
 
     def __str__(self):
         f = (lambda v: '%0.8f' % v if isinstance(v, (int, float)) else '')
-        keys, values = self.keys(), map(f, self.values())
-        mk, mv = max(map(len, keys)), max(map(len, values))
+        keys, values = list(self.keys()), list(map(f, list(self.values())))
+        mk, mv = max(list(map(len, keys))), max(list(map(len, values)))
         res = [a.ljust(mk) + ' : ' + v.rjust(mv) for a, v in zip(keys, values)]
 
         if self.expected:
@@ -109,15 +109,15 @@ class _MetaStatistics(list):
         return self.__class__._available
 
     def values(self):
-        return list(v for k, v in self.items())
+        return list(v for k, v in list(self.items()))
 
     def items(self):
-        keys = self.keys()
+        keys = list(self.keys())
         data = dict((k, list()) for k in keys)
         for s in self:
             for k in keys:
                 data[k].append(getattr(s, k))
-        return list((k, data[k]) for k in self.keys())
+        return list((k, data[k]) for k in list(self.keys()))
 
 
 class _BootstrapStatistics(_MetaStatistics):
@@ -127,7 +127,7 @@ class _BootstrapStatistics(_MetaStatistics):
         # bootstrap n*(n-1), (n-1)*(n-2), ...
         statistics = _Statistics if statistics is None else statistics
         if not expected:
-            expected = dict(statistics(data).items())
+            expected = dict(list(statistics(data).items()))
         self.sample = data
         k = int(float(len(data)) * sample_len)
         p = str(expected.get('process', ''))
@@ -141,7 +141,7 @@ class _BootstrapStatistics(_MetaStatistics):
             expected.update(dict((k, getattr(process, k)(time)) for k in self._available if hasattr(process, k)))
 
         res = list()
-        for k, v in super(_BootstrapStatistics, self).items():
+        for k, v in list(super(_BootstrapStatistics, self).items()):
             p = str(expected.get('process', ''))
             d = '%s[%s]' % (p, k)
             if k in expected:
@@ -157,7 +157,7 @@ class _ConvergenceStatistics(_MetaStatistics):
         # convergence [:1] -> [:n]
         statistics = _Statistics if statistics is None else statistics
         if not expected:
-            expected = dict(statistics(data).items())
+            expected = dict(list(statistics(data).items()))
         self.sample = data
         k = int(len(data)/sample_num)
         p = str(expected.get('process', ''))
@@ -176,7 +176,7 @@ class _MultiStatistics(object):
         self._inner = list(_Statistics(d) for d in zip(*data))
 
     def __getattr__(self, item):
-        if item in _MultiStatistics._available and hasattr(_Statistics(range(10)), item):
+        if item in _MultiStatistics._available and hasattr(_Statistics(list(range(10))), item):
             return list(getattr(s, item) for s in self._inner)
         else:
             return super(_MultiStatistics, self).__getattribute__(item)
@@ -200,9 +200,9 @@ class StatisticsConsumer(TransposedConsumer):
         # run statistics on timewave slice w at grid point g
         # self.result = [(g, self.statistics(w)) for g, w in zip(self.grid, self.result)]
         if self.kwargs:
-            self.result = zip(self.grid, (self.statistics(w, **self.kwargs) for w in self.result))
+            self.result = list(zip(self.grid, (self.statistics(w, **self.kwargs) for w in self.result)))
         else:
-            self.result = zip(self.grid, map(self.statistics, self.result))
+            self.result = list(zip(self.grid, list(map(self.statistics, self.result))))
 
 
 class StochasticProcessStatisticsConsumer(StatisticsConsumer):

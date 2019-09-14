@@ -10,10 +10,10 @@
 # License:  Apache License 2.0 (see LICENSE file)
 
 
-from itertools import izip
+
 from json import dumps
 
-from engine import Consumer
+from .engine import Consumer
 
 
 class QuietConsumer(Consumer):
@@ -198,7 +198,7 @@ class ConsumerConsumer(Consumer):
 
         :param object queue_get: second consumer state
         """
-        for (c, cs) in izip(self.consumers, queue_get):
+        for (c, cs) in zip(self.consumers, queue_get):
             c.get(cs)
         self.result = [c.result for c in self.consumers]
 
@@ -217,4 +217,4 @@ class TransposedConsumer(Consumer):
     def finalize(self):
         """finalize for PathConsumer"""
         super(TransposedConsumer, self).finalize()
-        self.result = map(list, zip(*self.result))  # transpose result
+        self.result = list(map(list, list(zip(*self.result))))  # transpose result

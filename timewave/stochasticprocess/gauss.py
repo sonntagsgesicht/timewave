@@ -12,7 +12,7 @@
 
 from math import sqrt, exp, log
 
-from base import StochasticProcess
+from .base import StochasticProcess
 
 
 class WienerProcess(StochasticProcess):

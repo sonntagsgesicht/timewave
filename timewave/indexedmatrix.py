@@ -10,7 +10,7 @@
 # License:  Apache License 2.0 (see LICENSE file)
 
 
-from __future__ import print_function
+
 
 from pprint import pprint
 from math import sqrt
@@ -48,37 +48,37 @@ def _fill_sparse_correlation(risk_factor_list, correlation):
 
 
 def cholesky(A):
-    L = [[0.0] * len(A) for _ in xrange(len(A))]
-    for i in xrange(len(A)):
-        for j in xrange(i + 1):
-            s = sum(L[i][k] * L[j][k] for k in xrange(j))
+    L = [[0.0] * len(A) for _ in range(len(A))]
+    for i in range(len(A)):
+        for j in range(i + 1):
+            s = sum(L[i][k] * L[j][k] for k in range(j))
             L[i][j] = sqrt(A[i][i] - s) if (i == j) else (1.0 / L[j][j] * (A[i][j] - s))
     return L
 
 
 def mmult(A, B):
-    C = [[0.0] * len(B[0]) for _ in xrange(len(A))]
-    for i in xrange(len(A)):
-        for j in xrange(len(B[0])):
-            C[i][j] = sum([A[i][k] * B[k][j] for k in xrange(len(B))])
+    C = [[0.0] * len(B[0]) for _ in range(len(A))]
+    for i in range(len(A)):
+        for j in range(len(B[0])):
+            C[i][j] = sum([A[i][k] * B[k][j] for k in range(len(B))])
     return C
 
 
 def mtrans(A):
-    return map(list, zip(*A))
+    return list(map(list, list(zip(*A))))
 
 
 def munit(n):
-    E = [[0.0] * n for _ in xrange(n)]
-    for i in xrange(n):
+    E = [[0.0] * n for _ in range(n)]
+    for i in range(n):
         E[i][i] = 1.0
     return E
 
 
 def mop(A, B, op):
-    C = [[0.0] * len(B[0]) for _ in xrange(len(A))]
-    for i in xrange(len(A)):
-        for j in xrange(len(A[0])):
+    C = [[0.0] * len(B[0]) for _ in range(len(A))]
+    for i in range(len(A)):
+        for j in range(len(A[0])):
             if op == '+':
                 C[i][j] = A[i][j] + B[i][j]
             elif op == '-':
@@ -95,8 +95,8 @@ def msub(A, B):
 
 
 def mdiag(v):
-    C = [[0.0] * len(v) for _ in xrange(len(v))]
-    for i in xrange(len(v)):
+    C = [[0.0] * len(v) for _ in range(len(v))]
+    for i in range(len(v)):
         C[i][i] = v[i]
     return C
 

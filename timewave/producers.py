@@ -15,7 +15,7 @@ module containing brownian motion model related classes
 """
 from json import loads
 
-from engine import Producer
+from .engine import Producer
 
 
 # classical producer
@@ -86,7 +86,7 @@ class DeterministicProducer(Producer):
     def __init__(self, sample_list, func=None, initial_state=None):
         func = (lambda s, i: sample_list[s.path][i])
         super(DeterministicProducer, self).__init__(func, initial_state)
-        self.grid = range(len(sample_list[0]))
+        self.grid = list(range(len(sample_list[0])))
         self.num_of_paths = len(sample_list)
 
     def evolve(self, new_date):

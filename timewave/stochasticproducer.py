@@ -18,10 +18,10 @@ from math import sqrt
 
 from scipy.linalg import cholesky
 
-from engine import Producer, State
-from producers import MultiProducer
+from .engine import Producer, State
+from .producers import MultiProducer
 
-from indexedmatrix import IndexMatrix
+from .indexedmatrix import IndexMatrix
 
 # producer
 
@@ -125,7 +125,7 @@ class CorrelatedGaussEvolutionProducer(MultiProducer):
             assert diffusion_driver is None
             # collect all drives in correlation
             drivers = set()
-            for i, j in correlation.keys():
+            for i, j in list(correlation.keys()):
                 drivers.add(i)
                 drivers.add(j)
             drivers = tuple(drivers)
