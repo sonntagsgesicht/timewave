@@ -3,7 +3,7 @@
 # timewave
 # --------
 # timewave, a stochastic process evolution simulation engine in python.
-# 
+#
 # Author:   sonntagsgesicht, based on a fork of Deutsche Postbank [pbrisk]
 # Version:  0.5, copyright Saturday, 14 September 2019
 # Website:  https://github.com/sonntagsgesicht/timewave
@@ -58,6 +58,7 @@ except ImportError:
     def plot_timewave_result(*args):
         pass
 
+    plt = None
 
 sys.path.append("..")
 
@@ -602,23 +603,24 @@ class MultiGaussEvolutionProducerUnitTests(unittest.TestCase):
         consumer = MultiConsumer(TransposedConsumer(), TransposedConsumer())
         first, second = Engine(producer, consumer).run(grid, 500, num_of_workers=None)
 
-        t = '2d-Scatter-MultiWiener'
-        fig, ax = plt.subplots()
-        ax.scatter(first[1], second[1])
-        plt.title(t)
-        plt.savefig('.' + sep + 'pdf' + sep + t.replace(' ', '_') + '.pdf')
-        plt.close()
+        if plt is not None:
+            t = '2d-Scatter-MultiWiener'
+            fig, ax = plt.subplots()
+            ax.scatter(first[1], second[1])
+            plt.title(t)
+            plt.savefig('.' + sep + 'pdf' + sep + t.replace(' ', '_') + '.pdf')
+            plt.close()
 
-        t = '3d-Scatter-MultiWiener'
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        for i in grid:
-            ax.scatter([i] * len(first[i]), first[i], second[i])
-            for x, y in zip(first[i], second[i]):
-                self.assertAlmostEqual(x, y - shift * i, -100)
-        plt.title(t)
-        plt.savefig('.' + sep + 'pdf' + sep + t.replace(' ', '_') + '.pdf')
-        plt.close()
+            t = '3d-Scatter-MultiWiener'
+            fig = plt.figure()
+            ax = fig.add_subplot(111, projection='3d')
+            for i in grid:
+                ax.scatter([i] * len(first[i]), first[i], second[i])
+                for x, y in zip(first[i], second[i]):
+                    self.assertAlmostEqual(x, y - shift * i, -100)
+            plt.title(t)
+            plt.savefig('.' + sep + 'pdf' + sep + t.replace(' ', '_') + '.pdf')
+            plt.close()
 
     def test_multi_gauss_process(self):
         grid = list(range(0, 10))
@@ -627,23 +629,24 @@ class MultiGaussEvolutionProducerUnitTests(unittest.TestCase):
         consumer = ConsumerConsumer(TransposedConsumer(lambda s: s.value[0]), TransposedConsumer(lambda s: s.value[1]))
         first, second = Engine(producer, consumer).run(grid, 500, num_of_workers=None)
 
-        t = '2d-Scatter-MultiGauss'
-        fig, ax = plt.subplots()
-        ax.scatter(first[1], second[1])
-        plt.title(t)
-        plt.savefig('.' + sep + 'pdf' + sep + t.replace(' ', '_') + '.pdf')
-        plt.close()
+        if plt is not None:
+            t = '2d-Scatter-MultiGauss'
+            fig, ax = plt.subplots()
+            ax.scatter(first[1], second[1])
+            plt.title(t)
+            plt.savefig('.' + sep + 'pdf' + sep + t.replace(' ', '_') + '.pdf')
+            plt.close()
 
-        t = '3d-Scatter-MultiGauss'
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        for i in grid:
-            ax.scatter([i] * len(first[i]), first[i], second[i])
-            for x, y in zip(first[i], second[i]):
-                self.assertAlmostEqual(x, y, -100)
-        plt.title(t)
-        plt.savefig('.' + sep + 'pdf' + sep + t.replace(' ', '_') + '.pdf')
-        plt.close()
+            t = '3d-Scatter-MultiGauss'
+            fig = plt.figure()
+            ax = fig.add_subplot(111, projection='3d')
+            for i in grid:
+                ax.scatter([i] * len(first[i]), first[i], second[i])
+                for x, y in zip(first[i], second[i]):
+                    self.assertAlmostEqual(x, y, -100)
+            plt.title(t)
+            plt.savefig('.' + sep + 'pdf' + sep + t.replace(' ', '_') + '.pdf')
+            plt.close()
 
 
 class SabrUnitTests(unittest.TestCase):
