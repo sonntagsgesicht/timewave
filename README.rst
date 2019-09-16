@@ -2,11 +2,55 @@
 timewave
 ========
 
-.. image:: https://img.shields.io/codeship/941240c0-4617-0135-c3c1-3602b75f498a/master.svg
-    :target: https://codeship.com//projects/231328
+.. image:: https://img.shields.io/codeship/f23aa6b0-ba22-0137-5b78-0e0bdbe34106/master.svg
+    :target: https://codeship.com//projects/364772
+
+.. image:: https://travis-ci.org/sonntagsgesicht/timewave.svg?branch=master
+    :target: https://travis-ci.org/sonntagsgesicht/timewave
 
 .. image:: https://readthedocs.org/projects/timewave/badge
     :target: http://timewave.readthedocs.io
+
+.. image:: https://img.shields.io/codefactor/grade/github/sonntagsgesicht/timewave/master
+   :target: https://www.codefactor.io/repository/github/sonntagsgesicht/timewave
+   :alt: CodeFactor Grade
+
+.. image:: https://img.shields.io/codeclimate/maintainability/sonntagsgesicht/timewave
+   :target: https://codeclimate.com/github/sonntagsgesicht/timewave/maintainability
+   :alt: Code Climate maintainability
+
+.. image:: https://img.shields.io/codeclimate/coverage/sonntagsgesicht/timewave
+   :target: https://codeclimate.com/github/sonntagsgesicht/timewave/test_coverage
+   :alt: Code Climate Coverage
+
+.. image:: https://img.shields.io/lgtm/grade/python/g/sonntagsgesicht/timewave.svg
+   :target: https://lgtm.com/projects/g/sonntagsgesicht/timewave/context:python/
+   :alt: lgtm grade
+
+.. image:: https://img.shields.io/lgtm/alerts/g/sonntagsgesicht/timewave.svg
+   :target: https://lgtm.com/projects/g/sonntagsgesicht/timewave/alerts/
+   :alt: total lgtm alerts
+
+.. image:: https://img.shields.io/github/license/sonntagsgesicht/timewave
+   :target: https://github.com/sonntagsgesicht/timewave/raw/master/LICENSE
+   :alt: GitHub
+
+.. image:: https://img.shields.io/github/release/sonntagsgesicht/timewave?label=github
+   :target: https://github.com/sonntagsgesicht/timewave/releases
+   :alt: GitHub release
+
+.. image:: https://img.shields.io/pypi/v/timewave
+   :target: https://pypi.org/project/timewave/
+   :alt: PyPI Version
+
+.. image:: https://img.shields.io/pypi/pyversions/timewave
+   :target: https://pypi.org/project/timewave/
+   :alt: PyPI - Python Version
+
+.. image:: https://img.shields.io/pypi/dm/timewave
+   :target: https://pypi.org/project/timewave/
+   :alt: PyPI Downloads
+
 
 a stochastic process evolution simulation engine in python.
 
