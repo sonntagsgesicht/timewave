@@ -120,7 +120,7 @@ class FiniteStateMarkovChain(StochasticProcess):
             r = list()
             for prop_y, cum_prop_y, mean_y in zip(m.T, m.cumsum(1).T, self.mean(t)):
                 exy_m = _e_xy(list(prop_x.flat), list(cum_prop_x.flat), list(prop_y.flat), list(cum_prop_y.flat))
-                exx = s.dot(exy_m).dot(s.T)[0, 0]
+                exx = s.dot(exy_m).dot(s.T)  #[0, 0]
                 cov_xy = exx - mean_x * mean_y
                 cov_xy = max(0., cov_xy) if cov_xy > -EPS else cov_xy  # avoid numerical negatives
                 r.append(cov_xy)
