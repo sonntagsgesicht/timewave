@@ -215,13 +215,13 @@ class BrownianMotionProducerUnitTests(unittest.TestCase):
         """
         producer = WienerProcessProducer()
         consumer = TransposedConsumer()
-        waves = Engine(producer, consumer).run(list(range(0, 20)), 5000, profiling=PROFILING)
+        waves = Engine(producer, consumer).run(list(range(0, 25)), 25000, profiling=PROFILING)
 
         # check that on average there is no movement
         for g, w in enumerate(waves):
             mean = sum(w) / len(w)
-            vol = sum([x * x for x in w]) / len(w)
-            self.assertAlmostEqual(0.0, mean, 0)
+            vol = sum([x * x for x in w]) / (len(w)-1)
+            self.assertAlmostEqual(0.0, mean, 1)
             self.assertAlmostEqual(float(g), vol, 0)
 
 
@@ -346,7 +346,7 @@ class OrnsteinUhlenbeckProcessUnitTests(GaussEvolutionProducerUnitTests):
 class GeometricBrownianMotionUnitTests(GaussEvolutionProducerUnitTests):
     def setUp(self):
         super(GeometricBrownianMotionUnitTests, self).setUp()
-        self.places = 3
+        self.places = 2
         self.grid = list(range(20))
         self.process = GeometricBrownianMotion(.1, .01, 0.1)
 
