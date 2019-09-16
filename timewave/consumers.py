@@ -3,7 +3,7 @@
 # timewave
 # --------
 # timewave, a stochastic process evolution simulation engine in python.
-# 
+#
 # Author:   sonntagsgesicht, based on a fork of Deutsche Postbank [pbrisk]
 # Version:  0.5, copyright Saturday, 14 September 2019
 # Website:  https://github.com/sonntagsgesicht/timewave
@@ -78,9 +78,16 @@ class StackedConsumer(Consumer):
         for c in self.consumers:
             if isinstance(c, (tuple, list)):
                 for cc in c:
-                    assert isinstance(cc, Consumer)
+                    if not isinstance(cc, Consumer):
+                        _ = (self.__class__.__name__, cc.__class__.__name__)
+                        msg = "%s input must be of type Consumer not %s." % _
+                        raise ValueError(msg)
+
             else:
-                assert isinstance(c, Consumer)
+                if not isinstance(c, Consumer):
+                    _ = (self.__class__.__name__, c.__class__.__name__)
+                    msg = "%s input must be of type Consumer not %s." % _
+                    raise ValueError(msg)
 
     def initialize(self, num_of_paths=None, grid=None, seed=None):
         """initialize StackedConsumer"""
@@ -143,9 +150,16 @@ class ConsumerConsumer(Consumer):
         for c in self.consumers:
             if isinstance(c, (tuple, list)):
                 for cc in c:
-                    assert isinstance(cc, Consumer)
+                    if not isinstance(cc, Consumer):
+                        _ = (self.__class__.__name__, cc.__class__.__name__)
+                        msg = "%s input must be of type Consumer not %s." % _
+                        raise ValueError(msg)
             else:
-                assert isinstance(c, Consumer)
+                if not isinstance(c, Consumer):
+                    _ = (self.__class__.__name__, c.__class__.__name__)
+                    msg = "%s input must be of type Consumer not %s." % _
+                    raise ValueError(msg)
+
         #: list(Consumer): list of consumers to be used one after another
         self.initial_state = [c.initial_state for c in self.consumers]
 

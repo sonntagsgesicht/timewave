@@ -3,7 +3,7 @@
 # timewave
 # --------
 # timewave, a stochastic process evolution simulation engine in python.
-# 
+#
 # Author:   sonntagsgesicht, based on a fork of Deutsche Postbank [pbrisk]
 # Version:  0.5, copyright Saturday, 14 September 2019
 # Website:  https://github.com/sonntagsgesicht/timewave
@@ -122,7 +122,9 @@ class CorrelatedGaussEvolutionProducer(MultiProducer):
 
         # build correlation from sparse matrix (dict)
         if isinstance(correlation, dict):
-            assert diffusion_driver is None
+            if diffusion_driver is not None:
+                raise ValueError("")
+
             # collect all drives in correlation
             drivers = set()
             for i, j in list(correlation.keys()):
@@ -139,7 +141,9 @@ class CorrelatedGaussEvolutionProducer(MultiProducer):
                 for rf_2 in drivers:
                     if (rf_1, rf_2) in correlation:
                         if (rf_2, rf_1) in correlation:
-                            assert correlation[rf_1, rf_2] == correlation[rf_2, rf_1]
+                            if not correlation[rf_1, rf_2] == correlation[rf_2, rf_1]:
+                                _ = rf_1, rf_2
+                                raise ValueError("Correlation data must be symmetric. Input at [%d, %d] is not." % _)
                         i, j = drivers.index(rf_1), drivers.index(rf_2)
                         list_correlation[i][j] = correlation[rf_1, rf_2]
                         list_correlation[j][i] = correlation[rf_1, rf_2]
@@ -159,7 +163,8 @@ class CorrelatedGaussEvolutionProducer(MultiProducer):
             diffusion_driver = tuple(drivers)
             # require enough correlation because here we cannot decide which drivers
             # should be independent or omitted
-            assert len(diffusion_driver) == len(correlation)
+            if not len(diffusion_driver) == len(correlation):
+                raise ValueError("Correlation dimension must meet number of diffusion drivers.")
 
         self._diffusion_driver = () if diffusion_driver is None else diffusion_driver
 

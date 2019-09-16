@@ -3,7 +3,7 @@
 # timewave
 # --------
 # timewave, a stochastic process evolution simulation engine in python.
-# 
+#
 # Author:   sonntagsgesicht, based on a fork of Deutsche Postbank [pbrisk]
 # Version:  0.5, copyright Saturday, 14 September 2019
 # Website:  https://github.com/sonntagsgesicht/timewave
@@ -26,7 +26,7 @@ __dependency_links__ = ()
 __data__ = ()
 __scripts__ = ()
 
-# coding=utf-8
+
 import dill as pickle  # enable proper pickle for lambda expressions
 from .engine import *
 from .producers import *

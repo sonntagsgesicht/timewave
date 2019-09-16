@@ -73,13 +73,14 @@ class FiniteStateMarkovChain(StochasticProcess):
         super(FiniteStateMarkovChain, self).__init__(start)
 
         # validate argument shapes in shapes and sum for being stochastic
-        assert abs(self._transition_matrix.sum(1) - 1.).sum() < EPS, \
-            'transition probabilities do not from distribution.\n' + str(self._transition_matrix)
-        assert abs(sum(self.start) - 1.) < EPS, \
-            'start does not from distribution.\n' + str(self.start)
-        assert (len(self.start), len(self.start)) == self._transition_matrix.shape, \
-            'dimension of transition and start argument must meet.\n' \
-            + str(self.start) + '\n' + str(self._transition_matrix)
+        if not abs(self._transition_matrix.sum(1) - 1.).sum() < EPS:
+            raise ValueError('transition probabilities do not from distribution.\n' + str(self._transition_matrix))
+        if not abs(sum(self.start) - 1.) < EPS:
+            raise ValueError('start does not from distribution.\n' + str(self.start))
+        if not (len(self.start), len(self.start)) == self._transition_matrix.shape:
+            msg = 'dimension of transition and start argument must meet.\n' \
+                  + str(self.start) + '\n' + str(self._transition_matrix)
+            raise ValueError(msg)
 
     def __len__(self):
         return 1

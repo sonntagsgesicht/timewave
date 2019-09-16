@@ -26,6 +26,10 @@ import numpy as np
 try:
     import matplotlib
     matplotlib.use('agg')
+except ImportError:
+    pass
+
+try:
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import axes3d
     from matplotlib import cm
@@ -93,7 +97,7 @@ class RandomGeneratorTestCase(unittest.TestCase):
         num = 20
         path = 50000
         random = Random()
-        for x in range(100):
+        for x in range(25):
             random.seed()
             sample = list()
             for _ in range(num):

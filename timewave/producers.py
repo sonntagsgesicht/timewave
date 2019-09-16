@@ -3,7 +3,7 @@
 # timewave
 # --------
 # timewave, a stochastic process evolution simulation engine in python.
-# 
+#
 # Author:   sonntagsgesicht, based on a fork of Deutsche Postbank [pbrisk]
 # Version:  0.5, copyright Saturday, 14 September 2019
 # Website:  https://github.com/sonntagsgesicht/timewave
@@ -41,9 +41,15 @@ class MultiProducer(Producer):
         for p in self.producers:
             if isinstance(p, (tuple, list)):
                 for pp in p:
-                    assert isinstance(pp, Producer)
+                    if not isinstance(pp, Producer):
+                        _ = (self.__class__.__name__, pp.__class__.__name__)
+                        msg = "%s input must be of type Producer not %s." % _
+                        raise ValueError(msg)
             else:
-                assert isinstance(p, Producer)
+                if not isinstance(p, Producer):
+                    _ = (self.__class__.__name__, p.__class__.__name__)
+                    msg = "%s input must be of type Producer not %s." % _
+                    raise ValueError(msg)
 
         self.initial_state = [p.initial_state for p in self.producers]
 

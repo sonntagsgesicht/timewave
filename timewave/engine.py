@@ -3,7 +3,7 @@
 # timewave
 # --------
 # timewave, a stochastic process evolution simulation engine in python.
-# 
+#
 # Author:   sonntagsgesicht, based on a fork of Deutsche Postbank [pbrisk]
 # Version:  0.5, copyright Saturday, 14 September 2019
 # Website:  https://github.com/sonntagsgesicht/timewave
@@ -104,7 +104,8 @@ class Engine(object):
     def __init__(self, producer=None, consumer=None):
         super(Engine, self).__init__()
 
-        assert isinstance(producer, Producer) and isinstance(consumer, Consumer)
+        if not isinstance(producer, Producer) and not isinstance(consumer, Consumer):
+            raise ValueError("%s argunments must me either Producer oder Consumer." % self.__class__.__name__)
         self.producer = producer
         self.consumer = consumer
 
