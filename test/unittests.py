@@ -359,7 +359,7 @@ class GeometricBrownianMotionUnitTests(GaussEvolutionProducerUnitTests):
         median = list()
         variance = list()
         for seed in range(100):
-            d, r = e.run(grid=[0., time], seed=seed)[-1]
+            d, r = e.run(grid=[0., time], seed=seed, num_of_paths=5000)[-1]
             mean.append(r.mean)
             median.append(r.median)
             variance.append(r.variance)
