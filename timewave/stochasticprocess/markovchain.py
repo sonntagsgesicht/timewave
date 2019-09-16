@@ -3,7 +3,7 @@
 # timewave
 # --------
 # timewave, a stochastic process evolution simulation engine in python.
-# 
+#
 # Author:   sonntagsgesicht, based on a fork of Deutsche Postbank [pbrisk]
 # Version:  0.5, copyright Saturday, 14 September 2019
 # Website:  https://github.com/sonntagsgesicht/timewave
@@ -66,7 +66,7 @@ class FiniteStateMarkovChain(StochasticProcess):
 
         start = (np.ones(dim) / dim).tolist() if start is None else list(start)
         transition = np.identity(dim) if transition is None else transition
-        self._transition_matrix = np.matrix(transition, float)
+        self._transition_matrix = np.array(transition, float)
 
         self._r_squared = r_squared
         self._idiosyncratic_random = Random()
@@ -111,7 +111,7 @@ class FiniteStateMarkovChain(StochasticProcess):
             b = list()
             for p, c in zip(prop_x, cum_prop_x):
                 b.append([max(0., min(c, d) - max(c - p, d - q)) for q, d in zip(prop_y, cum_prop_y)])
-            return np.matrix(b)
+            return np.array(b)
 
         s = np.asarray(self.start, float)
         m = self._m_pow(t)
@@ -155,7 +155,7 @@ class FiniteStateInhomogeneousMarkovChain(FiniteStateMarkovChain):
     def __init__(self, transition=None, r_squared=1., start=None):
         transition = [transition] if not isinstance(transition, (tuple, list)) else transition
         super(FiniteStateInhomogeneousMarkovChain, self).__init__(transition.pop(-1), r_squared, start)
-        self._transition_grid = list(np.matrix(t, float) for t in transition)
+        self._transition_grid = list(np.array(t, float) for t in transition)
         self._identity = np.identity(len(self.start), float)
 
     def _m_pow(self, t, s=0):
@@ -221,5 +221,5 @@ class AugmentedFiniteStateMarkovChain(StochasticProcess):
 
     def variance(self, t):
         w = np.array([self._augmentation(i) for i in range(len(self.start))], float)
-        c = np.matrix(self._underlying.covariance(t), float)
+        c = np.array(self._underlying.covariance(t), float)
         return w.dot(c).dot(w.T)[0, 0]

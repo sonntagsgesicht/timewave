@@ -29,7 +29,7 @@ from timewave.stochasticconsumer import _MultiStatistics, _Statistics, _Bootstra
 from timewave import GeometricBrownianMotion, WienerProcess, TimeDependentGeometricBrownianMotion
 
 
-if True:
+if False:
     from os import system, getcwd, sep, makedirs, path
     from timewave import TimeWaveConsumer, OrnsteinUhlenbeckProcess
 
@@ -146,10 +146,10 @@ if False:
     # s, t = (.5, .5), ((.8, .2), (.2, .8))
     f = (.0, .1, .1)
 
-if False:
+if True:
     p = AugmentedFiniteStateMarkovChain.random(5)
     # p = FiniteStateMarkovChain.random(5)
-    print(np.matrix(p._underlying_covariance(1)))
+    print(np.array(p._underlying.transition))
     print(p.variance(1))
 
 if False:
