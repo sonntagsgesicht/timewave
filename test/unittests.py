@@ -221,7 +221,7 @@ class BrownianMotionProducerUnitTests(unittest.TestCase):
         for g, w in enumerate(waves):
             mean = sum(w) / len(w)
             vol = sum([x * x for x in w]) / (len(w)-1)
-            self.assertAlmostEqual(0.0, mean, 1)
+            self.assertAlmostEqual(0.0, mean, 0)
             self.assertAlmostEqual(float(g), vol, 0)
 
 
