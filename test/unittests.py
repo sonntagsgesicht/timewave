@@ -76,7 +76,7 @@ from timewave.stochasticprocess.markovchain import FiniteStateMarkovChain, Finit
     FiniteStateContinuousTimeMarkovChain, AugmentedFiniteStateMarkovChain
 from timewave.stochasticproducer import GaussEvolutionProducer, MultiGaussEvolutionProducer
 from timewave.stochasticconsumer import StatisticsConsumer, StochasticProcessStatisticsConsumer, TimeWaveConsumer, \
-    _MultiStatistics, _Statistics
+    _MultiStatistics
 
 PROFILING = False
 

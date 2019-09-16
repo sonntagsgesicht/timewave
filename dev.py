@@ -146,7 +146,7 @@ if False:
     # s, t = (.5, .5), ((.8, .2), (.2, .8))
     f = (.0, .1, .1)
 
-if True:
+if False:
     p = AugmentedFiniteStateMarkovChain.random(5)
     # p = FiniteStateMarkovChain.random(5)
     print(np.array(p._underlying.transition))
