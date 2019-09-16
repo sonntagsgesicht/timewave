@@ -22,6 +22,8 @@ from math import exp, sqrt
 import numpy as np
 
 try:
+    import matplotlib
+    matplotlib.use('agg')
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import axes3d
     from matplotlib import cm
