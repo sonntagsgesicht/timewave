@@ -155,5 +155,28 @@ finish simulation (kind of reduce method)
 
 before returning results from run.
 
-.. |Codeship Status for pbrisk/pace| image:: https://codeship.com/projects/e5f5fcb0-9d66-0134-5a6b-6ae80fc9d0de/status?branch=master
-   :target: https://codeship.com/projects/188639
+Development Version
+-------------------
+
+The latest development version can be installed directly from GitHub:
+
+.. code-block:: bash
+
+    $ pip install --upgrade git+https://github.com/sonntagsgesicht/timewave.git
+
+
+Contributions
+-------------
+
+.. _issues: https://github.com/sonntagsgesicht/timewave/issues
+.. __: https://github.com/sonntagsgesicht/timewave/pulls
+
+Issues_ and `Pull Requests`__ are always welcome.
+
+
+License
+-------
+
+.. __: https://github.com/sonntagsgesicht/timewave/raw/master/LICENSE
+
+Code and documentation are available according to the Apache Software License (see LICENSE__).
