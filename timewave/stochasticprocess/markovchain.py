@@ -222,4 +222,4 @@ class AugmentedFiniteStateMarkovChain(StochasticProcess):
     def variance(self, t):
         w = np.array([self._augmentation(i) for i in range(len(self.start))], float)
         c = np.array(self._underlying.covariance(t), float)
-        return w.dot(c).dot(w.T)[0, 0]
+        return w.dot(c).dot(w.T)  # [0, 0]

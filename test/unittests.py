@@ -9,6 +9,7 @@
 # Website:  https://github.com/sonntagsgesicht/timewave
 # License:  Apache License 2.0 (see LICENSE file)
 
+from __future__ import print_function
 
 """
 UnitTests for timewave simulation engine
@@ -18,6 +19,7 @@ import unittest
 import sys
 from os import system, getcwd, sep, makedirs, path
 from math import exp, sqrt
+from random import Random
 
 import numpy as np
 
@@ -74,13 +76,38 @@ from timewave.stochasticprocess.markovchain import FiniteStateMarkovChain, Finit
     FiniteStateContinuousTimeMarkovChain, AugmentedFiniteStateMarkovChain
 from timewave.stochasticproducer import GaussEvolutionProducer, MultiGaussEvolutionProducer
 from timewave.stochasticconsumer import StatisticsConsumer, StochasticProcessStatisticsConsumer, TimeWaveConsumer, \
-    _MultiStatistics
+    _MultiStatistics, _Statistics
 
 PROFILING = False
 
 p = '.' + sep + 'pdf'
 if not path.exists(p):
     makedirs('.' + sep + 'pdf')
+
+# --- random generator test ---
+
+class RandomGeneratorTestCase(unittest.TestCase):
+
+    def test_random(self):
+        places = 0
+        num = 20
+        path = 50000
+        random = Random()
+        for x in range(100):
+            random.seed()
+            sample = list()
+            for _ in range(num):
+                sample.append(list(random.gauss(0., 1.) for __ in range(path)))
+            means = list(np.mean(s) for s in sample)
+            cov = list(np.cov(sample).flat)
+            res = x, min(means), max(means), min(cov), max(cov), np.mean(np.sum(sample, 0)), np.cov(np.sum(sample, 0))
+            print(' '.join('%+2.4f'.ljust(6) % r for r in res))
+            self.assertAlmostEqual(0.0, min(means), places)
+            self.assertAlmostEqual(0.0, max(means), places)
+            self.assertAlmostEqual(0.0, min(cov), places)
+            self.assertAlmostEqual(1.0, max(cov), places)
+            self.assertAlmostEqual(0.0, np.mean(np.sum(sample, 0)), places)
+            self.assertAlmostEqual(num, np.cov(np.sum(sample, 0)), places)
 
 
 # -- ProcessProducer ---
@@ -425,7 +452,7 @@ class TimeDependentGeometricBrownianMotionUnitTests(TermWienerProcessUnitTests):
 class MarkovChainEvolutionProducerUnitTests(unittest.TestCase):
     def setUp(self):
         self.places = 1
-        self.path = 5000
+        self.path = 50000
         self.grid = list(range(10))
         s, t = [0.5, 0.5, .0], [[.75, .25, .0], [.25, .5, .25], [.0, .25, .75]]
         self.process = FiniteStateMarkovChain(transition=t, start=s)
