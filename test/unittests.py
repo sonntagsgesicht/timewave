@@ -351,7 +351,7 @@ class GeometricBrownianMotionUnitTests(GaussEvolutionProducerUnitTests):
         self.process = GeometricBrownianMotion(.1, .01, 0.1)
 
     def test_mean(self):
-        start, drift, vol, time = 1., 0.1, 0.1, 1.
+        start, drift, vol, time = 1., 0.1, 0.02, 1.
         expected = start * exp((drift + 0.5 * vol ** 2) * time)
         process = GeometricBrownianMotion(drift, vol, start)
         e = Engine(GaussEvolutionProducer(process), StatisticsConsumer())
