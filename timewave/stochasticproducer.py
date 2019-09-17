@@ -164,7 +164,7 @@ class CorrelatedGaussEvolutionProducer(MultiProducer):
             # require enough correlation because here we cannot decide which drivers
             # should be independent or omitted
             if not len(diffusion_driver) == len(correlation):
-                raise ValueError("Correlation dimension must meet number of diffusion drivers.")
+                raise AssertionError("Correlation dimension must meet number of diffusion drivers.")
 
         self._diffusion_driver = () if diffusion_driver is None else diffusion_driver
 

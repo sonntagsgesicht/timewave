@@ -504,6 +504,9 @@ class D5MarkovChainEvolutionProducerUnitTests(MarkovChainEvolutionProducerUnitTe
     def setUp(self):
         super(D5MarkovChainEvolutionProducerUnitTests, self).setUp()
         self.process = FiniteStateMarkovChain.random(5)
+        self.places = 1
+        self.path = 50000
+        self.grid = list(range(5))
 
 
 class ContinuousTimeMarkovChainEvolutionProducerUnitTests(MarkovChainEvolutionProducerUnitTests):
