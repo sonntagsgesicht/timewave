@@ -1,15 +1,18 @@
-========
-timewave
-========
+
+Python library *timewave*
+-------------------------
 
 .. image:: https://img.shields.io/codeship/f23aa6b0-ba22-0137-5b78-0e0bdbe34106/master.svg
-    :target: https://codeship.com//projects/364772
+   :target: https://codeship.com//projects/364772
+   :alt: CodeShip
 
 .. image:: https://travis-ci.org/sonntagsgesicht/timewave.svg?branch=master
-    :target: https://travis-ci.org/sonntagsgesicht/timewave
+   :target: https://travis-ci.org/sonntagsgesicht/timewave
+   :alt: Travis ci
 
 .. image:: https://readthedocs.org/projects/timewave/badge
-    :target: http://timewave.readthedocs.io
+   :target: http://timewave.readthedocs.io
+   :alt: Read the Docs
 
 .. image:: https://img.shields.io/codefactor/grade/github/sonntagsgesicht/timewave/master
    :target: https://www.codefactor.io/repository/github/sonntagsgesicht/timewave
@@ -19,9 +22,9 @@ timewave
    :target: https://codeclimate.com/github/sonntagsgesicht/timewave/maintainability
    :alt: Code Climate maintainability
 
-.. image:: https://img.shields.io/codeclimate/coverage/sonntagsgesicht/timewave
-   :target: https://codeclimate.com/github/sonntagsgesicht/timewave/test_coverage
-   :alt: Code Climate Coverage
+.. image:: https://img.shields.io/codecov/c/github/sonntagsgesicht/timewave
+   :target: https://codecov.io/gh/sonntagsgesicht/timewave
+   :alt: Codecov
 
 .. image:: https://img.shields.io/lgtm/grade/python/g/sonntagsgesicht/timewave.svg
    :target: https://lgtm.com/projects/g/sonntagsgesicht/timewave/context:python/
