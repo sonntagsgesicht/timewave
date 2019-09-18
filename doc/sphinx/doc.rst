@@ -1,4 +1,6 @@
 
+.. module:: timewave
+
 -----------------
 API Documentation
 -----------------
@@ -10,65 +12,83 @@ API Documentation
 Timewave Engine
 ===============
 
+.. py:currentmodule:: timewave.engine
+
 .. autosummary::
     :nosignatures:
 
-    engine.Engine
-    engine.State
-    engine.Producer
-    engine.Consumer
+    Engine
+    State
+    Producer
+    Consumer
 
-.. automodule:: engine
+.. automodule:: timewave.engine
 
 
 Timewave Producer
 =================
 
+.. py:currentmodule:: timewave.producers
+
 .. autosummary::
     :nosignatures:
 
-    producers.DeterministicProducer
-    producers.StringReaderProducer
-    producers.MultiProducer
+    DeterministicProducer
+    StringReaderProducer
+    MultiProducer
 
-.. inheritance-diagram:: producers
+.. inheritance-diagram:: timewave.producers
+    :parts: 1
 
-.. automodule:: producers
+.. automodule:: timewave.producers
 
 
 Timewave Consumer
 =================
 
+.. py:currentmodule:: timewave.consumers
+
 .. autosummary::
     :nosignatures:
 
-    consumers.QuietConsumer
-    consumers.StringWriterConsumer
-    consumers.StackedConsumer
-    consumers.ConsumerConsumer
-    consumers.MultiConsumer
-    consumers.ResetConsumer
-    consumers.TransposedConsumer
+    QuietConsumer
+    StringWriterConsumer
+    StackedConsumer
+    ConsumerConsumer
+    MultiConsumer
+    ResetConsumer
+    TransposedConsumer
 
-.. inheritance-diagram:: consumers
+.. inheritance-diagram:: timewave.consumers
+    :parts: 1
 
-.. automodule:: consumers
+.. automodule:: timewave.consumers
 
 
 Stochastic Process Simulation
 =============================
 
-.. inheritance-diagram:: stochasticproducer
+.. py:currentmodule:: timewave.stochasticproducer
 
-.. inheritance-diagram:: stochasticconsumer
+.. inheritance-diagram:: timewave.stochasticproducer
+    :parts: 1
 
-.. automodule:: stochasticproducer
 
-.. automodule:: stochasticconsumer
+.. py:currentmodule:: timewave.stochasticconsumer
+
+.. inheritance-diagram:: timewave.stochasticconsumer
+    :parts: 1
+
+
+.. automodule:: timewave.stochasticproducer
+
+.. automodule:: timewave.stochasticconsumer
 
 
 Stochastic Process Definition
 =============================
+
+.. py:currentmodule:: timewave
 
 .. autosummary::
     :nosignatures:
@@ -77,10 +97,13 @@ Stochastic Process Definition
     stochasticprocess.base.MultivariateStochasticProcess
 
 
-.. inheritance-diagram:: stochasticprocess.gauss
-.. inheritance-diagram:: stochasticprocess.markovchain
+.. inheritance-diagram:: timewave.stochasticprocess.gauss
+    :parts: 1
 
-.. automodule:: stochasticprocess.base
-.. automodule:: stochasticprocess.gauss
-.. automodule:: stochasticprocess.markovchain
-.. automodule:: stochasticprocess.multifactor
+.. inheritance-diagram:: timewave.stochasticprocess.markovchain
+    :parts: 1
+
+.. automodule:: timewave.stochasticprocess.base
+.. automodule:: timewave.stochasticprocess.gauss
+.. automodule:: timewave.stochasticprocess.markovchain
+.. automodule:: timewave.stochasticprocess.multifactor
