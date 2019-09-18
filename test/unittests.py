@@ -3,7 +3,7 @@
 # timewave
 # --------
 # timewave, a stochastic process evolution simulation engine in python.
-# 
+#
 # Author:   sonntagsgesicht, based on a fork of Deutsche Postbank [pbrisk]
 # Version:  0.5, copyright Wednesday, 18 September 2019
 # Website:  https://github.com/sonntagsgesicht/timewave
@@ -501,13 +501,13 @@ class MarkovChainEvolutionProducerUnitTests(unittest.TestCase):
         plot_timewave_result(consumer.result, '3d-' + str(self.process), '.' + sep + 'pdf')
 
 
-class D5MarkovChainEvolutionProducerUnitTests(MarkovChainEvolutionProducerUnitTests):
-    def setUp(self):
-        super(D5MarkovChainEvolutionProducerUnitTests, self).setUp()
-        self.process = FiniteStateMarkovChain.random(5)
-        self.places = 1
-        self.path = 50000
-        self.grid = list(range(5))
+# class D5MarkovChainEvolutionProducerUnitTests(MarkovChainEvolutionProducerUnitTests):
+#     def setUp(self):
+#         super(D5MarkovChainEvolutionProducerUnitTests, self).setUp()
+#         self.process = FiniteStateMarkovChain.random(5)
+#         self.places = 1
+#         self.path = 50000
+#         self.grid = list(range(5))
 
 
 class ContinuousTimeMarkovChainEvolutionProducerUnitTests(MarkovChainEvolutionProducerUnitTests):
