@@ -18,8 +18,8 @@ from copy import copy
 from random import Random
 
 try:  # try accepted due to lack of multiprocessing on iOS Pythonista
-    from multiprocessing import cpu_count, current_process, Process, Queue
-
+    from multiprocessing_on_dill import cpu_count, current_process, Process, Queue
+    #from multiprocessing import cpu_count, current_process, Process, Queue
     CPU_COUNT = cpu_count()
 except ImportError:
     cpu_count, current_process, Process, Queue = None, None, None, None
@@ -34,7 +34,7 @@ class Producer(object):
     def __init__(self, func=None, initial_state=None):
         super(Producer, self).__init__()
         if func is None:
-            func = (lambda s, d: s.value)
+            _func = (lambda s, d: s.value)
         self.func = func
 
         if initial_state is None:

@@ -18,10 +18,10 @@ __email__ = 'sonntagsgesicht@icloud.com'
 __url__ = 'https://github.com/sonntagsgesicht/' + __name__
 
 __date__ = 'Wednesday, 18 September 2019'
-__version__ = '0.6'
+__version__ = '0.6.1'
 __dev_status__ = '4 - Beta'
 
-__dependencies__ = ('dill', 'numpy', 'scipy')
+__dependencies__ = ('numpy', 'scipy', 'dill', 'multiprocessing_on_dill')
 __dependency_links__ = ()
 __data__ = ()
 __scripts__ = ()
