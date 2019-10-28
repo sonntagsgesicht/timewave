@@ -54,6 +54,9 @@ Python library *timewave*
    :target: https://pypi.org/project/timewave/
    :alt: PyPI Downloads
 
+.. image:: https://pepy.tech/badge/timewave
+   :target: https://pypi.org/project/timewave/
+   :alt: PyPI Downloads
 
 a stochastic process evolution simulation engine in python.
 
